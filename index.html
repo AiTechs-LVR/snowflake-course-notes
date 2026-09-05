@@ -1,0 +1,2085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Snowflake Course Notes — S01 to S55</title>
+<style>
+  :root{
+    --ink:#152238; --ink-soft:#4a5a75; --line:#e2e7ef; --paper:#f5f7fa; --card:#fff;
+    --navy:#152a45; --accent:#1f5fa8; --accent-soft:#eaf1fa;
+    --warn:#8a5a12; --warn-soft:#fdf4e3; --ok:#1d6b4f; --ok-soft:#e9f5ef;
+    --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:"Segoe UI",-apple-system,Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.65}
+  .wrap{display:flex;gap:28px;max-width:1320px;margin:0 auto;padding:28px 20px 80px}
+
+  nav{width:268px;flex:0 0 268px;position:sticky;top:28px;align-self:flex-start;
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:18px 14px;max-height:calc(100vh - 56px);overflow:auto}
+  nav h2{font-size:13px;letter-spacing:.09em;color:var(--ink-soft);margin:0 0 12px 8px;font-weight:700}
+  nav a{display:block;padding:7px 10px;margin-bottom:2px;border-radius:7px;color:var(--ink);
+    text-decoration:none;font-size:14px}
+  nav a:hover{background:var(--paper)}
+  nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+  nav .grp{font-size:11.5px;letter-spacing:.08em;color:#8b98ad;margin:14px 0 6px 10px;font-weight:700}
+
+  main{flex:1;min-width:0}
+  header.hero{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:30px 32px;margin-bottom:22px}
+  header.hero h1{margin:0 0 8px;font-size:31px;line-height:1.25;letter-spacing:-.01em}
+  header.hero p{margin:0;color:var(--ink-soft);max-width:72ch}
+  .meta{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px}
+  .pill{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:4px 13px;font-size:13px;color:var(--ink-soft)}
+
+  section{background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:26px 30px;margin-bottom:20px;scroll-margin-top:16px}
+  .eyebrow{color:var(--accent);font-size:12.5px;font-weight:700;letter-spacing:.07em;margin-bottom:6px}
+  section h2{margin:0 0 4px;font-size:25px;letter-spacing:-.01em}
+  .sub{color:var(--ink-soft);margin:0 0 20px}
+  h3{font-size:18px;margin:28px 0 10px;padding-top:14px;border-top:1px solid var(--line)}
+  h3:first-of-type{border-top:none;padding-top:0}
+  h4.plain{font-size:16px;margin:18px 0 8px}
+  p{max-width:80ch}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+  .grid.three{grid-template-columns:repeat(3,1fr)}
+  .box{border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+  .box h4{margin:0 0 8px;font-size:15.5px}
+  .box p{margin:0;color:var(--ink-soft);font-size:14.8px}
+  .box p+p{margin-top:8px}
+
+  .callout{border-left:4px solid var(--accent);background:var(--accent-soft);
+    border-radius:0 10px 10px 0;padding:14px 18px;margin:18px 0}
+  .callout strong{display:block;margin-bottom:4px}
+  .callout p{margin:0;font-size:15px}
+  .callout.warn{border-left-color:#c98a1e;background:var(--warn-soft)}
+  .callout.hook{border-left-color:#2f8f6b;background:var(--ok-soft)}
+
+  pre{background:var(--navy);color:#dbe7f5;border-radius:10px;padding:18px 20px;overflow-x:auto;
+    font-family:var(--mono);font-size:13.3px;line-height:1.6;margin:14px 0}
+  pre .lbl{display:block;color:#7fb2e8;font-size:11.5px;letter-spacing:.08em;font-weight:700;margin-bottom:10px}
+  pre .c{color:#8fa8c4}
+  pre .k{color:#8fd3ff}
+  pre .s{color:#b7e7a8}
+  code{font-family:var(--mono);font-size:13.3px;background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+  pre code{background:none;border:none;padding:0;color:inherit}
+
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14.8px}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
+  th{background:var(--paper);font-weight:600}
+  td code{font-size:12.8px}
+
+  .flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:18px 0}
+  .flow span.step{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:8px 14px;font-size:14px;font-weight:600}
+  .flow span.ar{color:var(--ink-soft)}
+
+  details{border:1px solid var(--line);border-radius:9px;padding:12px 16px;margin-bottom:10px}
+  details[open]{background:#fcfdff}
+  summary{cursor:pointer;font-weight:600;font-size:15.3px}
+  summary::marker{color:var(--accent)}
+  details p{margin:10px 0 0;color:var(--ink-soft);font-size:15px}
+  details pre{margin-top:12px}
+
+  ol.steps{padding-left:20px}
+  ol.steps li{margin-bottom:9px}
+  ul.tight{padding-left:20px;margin:8px 0}
+  ul.tight li{margin-bottom:6px}
+  .sess{display:inline-block;background:var(--accent-soft);color:var(--accent);border-radius:5px;
+    padding:1px 7px;font-size:12.5px;font-weight:700;margin-right:7px;font-family:var(--mono)}
+  footer{color:var(--ink-soft);font-size:14px;text-align:center;padding:10px}
+
+  .fig{margin:20px 0;border:1px solid var(--line);border-radius:10px;padding:16px 16px 10px;
+    background:#fbfcfe;position:relative}
+  .fig svg{width:100%;height:auto;display:block}
+  .fig figcaption{margin-top:10px;font-size:13.8px;color:var(--ink-soft);text-align:center;max-width:none}
+  .fig .wm{position:absolute;right:12px;bottom:8px;font-size:10.5px;letter-spacing:.06em;
+    color:#b9c4d4;font-family:var(--mono)}
+
+  section{position:relative}
+  section::after{content:"AiTechs_LVR";position:absolute;right:16px;bottom:10px;
+    font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:#c3ccda}
+  section{padding-bottom:38px}
+  .brandmark{font-family:var(--mono);font-size:12.5px;letter-spacing:.1em;color:var(--accent);
+    font-weight:700;margin-bottom:10px}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+  @media (max-width:1000px){
+    .wrap{flex-direction:column;padding:16px}
+    nav{position:static;width:100%;flex:none;max-height:none}
+    .grid,.grid.three{grid-template-columns:1fr}
+    section{padding:20px}
+    header.hero{padding:22px}
+    header.hero h1{font-size:24px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav>
+  <h2>TOPICS</h2>
+  <div class="grp">FOUNDATION</div>
+  <a href="#m1" class="on">1. Account &amp; Editions</a>
+  <a href="#m2">2. Roles &amp; Users</a>
+  <a href="#m3">3. Architecture</a>
+  <a href="#m4">4. Warehouse, Cache, Monitor</a>
+  <a href="#m5">5. Database, Schema, Tables</a>
+  <div class="grp">CORE FEATURES</div>
+  <a href="#m6">6. Time Travel &amp; Cloning</a>
+  <a href="#m7">7. JSON &amp; XML</a>
+  <a href="#m8">8. Stages &amp; Loading</a>
+  <a href="#m9">9. Snowpipe &amp; External Tables</a>
+  <a href="#m10">10. Masking &amp; Row Access</a>
+  <div class="grp">PIPELINES</div>
+  <a href="#m11">11. Streams &amp; Tasks</a>
+  <a href="#m12">12. Views &amp; Dynamic Tables</a>
+  <a href="#m13">13. Sharing &amp; Clustering</a>
+  <a href="#m14">14. UDF &amp; Stored Procedures</a>
+  <div class="grp">TOOLS</div>
+  <a href="#m15">15. dbt Setup &amp; Models</a>
+  <a href="#m16">16. dbt Snapshots &amp; Tests</a>
+  <a href="#m17">17. dbt Macros, Hooks, Seeds</a>
+  <a href="#m18">18. AWS &amp; Azure Data Factory</a>
+  <div class="grp">APPLY</div>
+  <a href="#mmed">19. Medallion Architecture</a>
+  <a href="#m19">20. Sample Projects</a>
+  <a href="#m20">21. Cortex AI</a>
+  <a href="#m21">22. Quick Revision</a>
+  <a href="#m22">23. Self Check</a>
+</nav>
+
+<main>
+
+<header class="hero">
+  <div class="brandmark">AiTechs_LVR</div>
+  <h1>Snowflake — Complete Course Notes</h1>
+  <p>Every session from S01 to S55, grouped into 22 readable modules. Each concept gets a plain
+     explanation, a picture to remember it by, working syntax, and the point an interviewer
+     actually wants to hear.</p>
+  <div class="meta">
+    <span class="pill">AiTechs_LVR</span>
+    <span class="pill">Snowflake + dbt + ADF + AWS</span>
+    <span class="pill">Cortex AI</span>
+    <span class="pill">Works offline</span>
+  </div>
+</header>
+
+<!-- ===================== M1 ===================== -->
+<section id="m1">
+  <div class="eyebrow">GETTING STARTED</div>
+  <h2>1. Account Creation &amp; Editions</h2>
+  <p class="sub">What you choose on day one, and why it matters later.</p>
+
+  <p>Snowflake is a cloud data platform — it runs on top of AWS, Azure or GCP, but you never manage
+     servers. You pick a cloud, a region, and an edition. The trial gives 30 days and $400 of credits,
+     which is enough to practise everything in this course.</p>
+
+  <h3>Editions — know the differences</h3>
+  <table>
+    <tr><th style="width:22%">Edition</th><th>What it adds</th></tr>
+    <tr><td><strong>Standard</strong></td><td>Core platform, 1 day Time Travel, all basic SQL features.</td></tr>
+    <tr><td><strong>Enterprise</strong></td><td>Up to 90 days Time Travel, multi-cluster warehouses, materialised views, search optimisation, column-level security (masking).</td></tr>
+    <tr><td><strong>Business Critical</strong></td><td>Stronger encryption, HIPAA/PCI compliance, failover across regions.</td></tr>
+    <tr><td><strong>Virtual Private (VPS)</strong></td><td>Completely isolated Snowflake environment — banks and defence use this.</td></tr>
+  </table>
+
+  <div class="callout">
+    <strong>Interview point</strong>
+    <p>Masking policies and multi-cluster warehouses need Enterprise edition at minimum. If someone
+       asks why a masking policy failed on their account, edition is the first thing to check.</p>
+  </div>
+
+  <h3>Ways to connect</h3>
+  <ul class="tight">
+    <li><strong>Snowsight</strong> — the web UI, where you will spend most of your time.</li>
+    <li><strong>SnowSQL</strong> — the command-line client, needed for loading local files with PUT.</li>
+    <li><strong>Connectors</strong> — Python, JDBC, ODBC, Spark, and the dbt adapter.</li>
+  </ul>
+
+  <pre><span class="lbl">CONTEXT — THE FOUR THINGS EVERY SESSION NEEDS</span><span class="k">USE ROLE</span> SYSADMIN;
+<span class="k">USE WAREHOUSE</span> COMPUTE_WH;
+<span class="k">USE DATABASE</span> SALES_DB;
+<span class="k">USE SCHEMA</span> RAW;
+<span class="c">-- forget one of these and you get "Cannot perform operation. No active warehouse"</span></pre>
+</section>
+
+<!-- ===================== M2 ===================== -->
+<section id="m2">
+  <div class="eyebrow">SECURITY MODEL</div>
+  <h2>2. Roles &amp; Users</h2>
+  <p class="sub">Snowflake's whole security model is role-based. Get this right and the rest follows.</p>
+
+  <p>A user never owns permissions directly. Permissions are granted to <em>roles</em>, and roles are
+     granted to users. Roles can also be granted to other roles, which builds a hierarchy where a
+     senior role automatically inherits everything below it.</p>
+
+  <figure class="fig">
+<svg viewBox="0 0 760 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Role hierarchy" font-family="Segoe UI">
+<rect x="290" y="12" width="180" height="42" rx="8" fill="#fdf4e3" stroke="#c98a1e"/>
+<text x="380" y="32" text-anchor="middle" font-size="13" font-weight="700" fill="#8a5a12">ACCOUNTADMIN</text>
+<text x="380" y="47" text-anchor="middle" font-size="11" fill="#8a5a12">billing · 2–3 people only</text>
+
+<line x1="380" y1="54" x2="200" y2="84" stroke="#8b98ad"/><line x1="380" y1="54" x2="560" y2="84" stroke="#8b98ad"/>
+
+<rect x="110" y="84" width="180" height="42" rx="8" fill="#fff" stroke="#152a45"/>
+<text x="200" y="103" text-anchor="middle" font-size="13" font-weight="700" fill="#152238">SECURITYADMIN</text>
+<text x="200" y="118" text-anchor="middle" font-size="11" fill="#4a5a75">grants everywhere</text>
+
+<rect x="470" y="84" width="180" height="42" rx="8" fill="#fff" stroke="#152a45"/>
+<text x="560" y="103" text-anchor="middle" font-size="13" font-weight="700" fill="#152238">SYSADMIN</text>
+<text x="560" y="118" text-anchor="middle" font-size="11" fill="#4a5a75">databases · warehouses</text>
+
+<line x1="200" y1="126" x2="200" y2="156" stroke="#8b98ad"/>
+<line x1="560" y1="126" x2="470" y2="156" stroke="#8b98ad"/><line x1="560" y1="126" x2="650" y2="156" stroke="#8b98ad"/>
+
+<rect x="110" y="156" width="180" height="38" rx="8" fill="#fff" stroke="#d6dde8"/>
+<text x="200" y="180" text-anchor="middle" font-size="12.5" fill="#152238">USERADMIN</text>
+
+<rect x="380" y="156" width="180" height="38" rx="8" fill="#eaf1fa" stroke="#1f5fa8"/>
+<text x="470" y="180" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1f5fa8">R_TRANSFORM</text>
+
+<rect x="580" y="156" width="160" height="38" rx="8" fill="#eaf1fa" stroke="#1f5fa8"/>
+<text x="660" y="180" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1f5fa8">R_ANALYST</text>
+
+<line x1="470" y1="194" x2="470" y2="216" stroke="#8b98ad"/><line x1="660" y1="194" x2="660" y2="216" stroke="#8b98ad"/>
+<rect x="380" y="216" width="360" height="30" rx="8" fill="#f5f7fa" stroke="#d6dde8"/>
+<text x="560" y="236" text-anchor="middle" font-size="12" fill="#4a5a75">users — they wear a role, they never hold privileges themselves</text>
+</svg>
+<figcaption>Roles hold privileges; users wear roles. Custom roles roll up to SYSADMIN so it can manage everything below.</figcaption>
+<span class="wm">AiTechs_LVR</span>
+</figure>
+
+  <h3>The system-defined roles</h3>
+  <table>
+    <tr><th style="width:22%">Role</th><th>What it is for</th></tr>
+    <tr><td><code>ORGADMIN</code></td><td>Manages the organisation and creates accounts.</td></tr>
+    <tr><td><code>ACCOUNTADMIN</code></td><td>Top of the tree — billing, account settings. Give it to two or three people only, never for daily work.</td></tr>
+    <tr><td><code>SECURITYADMIN</code></td><td>Manages users, roles and grants globally.</td></tr>
+    <tr><td><code>USERADMIN</code></td><td>Creates users and roles (but not global grants).</td></tr>
+    <tr><td><code>SYSADMIN</code></td><td>Creates databases, schemas, warehouses. Your custom roles should roll up here.</td></tr>
+    <tr><td><code>PUBLIC</code></td><td>Every user gets it automatically. Anything granted here is visible to everybody.</td></tr>
+  </table>
+
+  <pre><span class="lbl">A CUSTOM ROLE, DONE PROPERLY</span><span class="k">USE ROLE</span> USERADMIN;
+<span class="k">CREATE ROLE</span> R_ANALYST;
+<span class="k">CREATE USER</span> rahul PASSWORD=<span class="s">'Temp@123'</span> DEFAULT_ROLE=R_ANALYST MUST_CHANGE_PASSWORD=TRUE;
+<span class="k">GRANT ROLE</span> R_ANALYST <span class="k">TO USER</span> rahul;
+
+<span class="k">USE ROLE</span> SYSADMIN;
+<span class="k">GRANT USAGE ON WAREHOUSE</span> COMPUTE_WH <span class="k">TO ROLE</span> R_ANALYST;
+<span class="k">GRANT USAGE ON DATABASE</span> SALES_DB <span class="k">TO ROLE</span> R_ANALYST;
+<span class="k">GRANT USAGE ON SCHEMA</span> SALES_DB.RAW <span class="k">TO ROLE</span> R_ANALYST;
+<span class="k">GRANT SELECT ON ALL TABLES IN SCHEMA</span> SALES_DB.RAW <span class="k">TO ROLE</span> R_ANALYST;
+
+<span class="c">-- and for tables created in future, otherwise new tables are invisible</span>
+<span class="k">GRANT SELECT ON FUTURE TABLES IN SCHEMA</span> SALES_DB.RAW <span class="k">TO ROLE</span> R_ANALYST;
+
+<span class="c">-- roll the custom role up so SYSADMIN can manage it</span>
+<span class="k">GRANT ROLE</span> R_ANALYST <span class="k">TO ROLE</span> SYSADMIN;</pre>
+
+  <div class="callout warn">
+    <strong>The mistake everyone makes once</strong>
+    <p>Granting SELECT on all tables, then wondering why the analyst cannot see the table created
+       yesterday. <code>ON ALL</code> is a snapshot of what exists now; <code>ON FUTURE</code> covers
+       what comes later. You usually need both.</p>
+  </div>
+
+  <div class="callout hook">
+    <strong>Remember the hierarchy</strong>
+    <p>Think of an office. USERADMIN is HR issuing ID cards. SYSADMIN is the facilities manager who
+       owns the rooms. ACCOUNTADMIN is the owner who also sees the electricity bill. Nobody does
+       daily work wearing the owner's badge.</p>
+  </div>
+
+  <p>Two useful commands when access breaks: <code>SHOW GRANTS TO ROLE R_ANALYST;</code> and
+     <code>SHOW GRANTS ON TABLE SALES_DB.RAW.ORDERS;</code>. Also remember a role needs
+     <code>USAGE</code> on the database <em>and</em> the schema before any table grant works — three
+     levels, and people forget the middle one.</p>
+</section>
+
+<!-- ===================== M3 ===================== -->
+<section id="m3">
+  <div class="eyebrow">HOW SNOWFLAKE IS BUILT</div>
+  <h2>3. Architecture</h2>
+  <p class="sub">The single most asked interview topic. Learn it as three layers.</p>
+
+  <div class="flow">
+    <span class="step">Cloud Services</span><span class="ar">→</span>
+    <span class="step">Query Processing (Compute)</span><span class="ar">→</span>
+    <span class="step">Database Storage</span>
+  </div>
+
+  <figure class="fig">
+<svg viewBox="0 0 760 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Three layer architecture">
+<rect x="20" y="14" width="720" height="62" rx="10" fill="#eaf1fa" stroke="#1f5fa8"/>
+<text x="380" y="40" text-anchor="middle" font-size="15" font-weight="700" fill="#1f5fa8" font-family="Segoe UI">CLOUD SERVICES — the brain</text>
+<text x="380" y="62" text-anchor="middle" font-size="12.5" fill="#4a5a75" font-family="Segoe UI">login · roles · optimiser · metadata · transactions · result cache</text>
+
+<g font-family="Segoe UI">
+<rect x="40" y="110" width="200" height="72" rx="9" fill="#fff" stroke="#152a45"/>
+<text x="140" y="136" text-anchor="middle" font-size="13.5" font-weight="700" fill="#152238">WH_INGEST</text>
+<text x="140" y="157" text-anchor="middle" font-size="12" fill="#4a5a75">loading — Small</text>
+<rect x="280" y="110" width="200" height="72" rx="9" fill="#fff" stroke="#152a45"/>
+<text x="380" y="136" text-anchor="middle" font-size="13.5" font-weight="700" fill="#152238">WH_TRANSFORM</text>
+<text x="380" y="157" text-anchor="middle" font-size="12" fill="#4a5a75">tasks and merges — Medium</text>
+<rect x="520" y="110" width="200" height="72" rx="9" fill="#fff" stroke="#152a45"/>
+<text x="620" y="136" text-anchor="middle" font-size="13.5" font-weight="700" fill="#152238">WH_REPORT</text>
+<text x="620" y="157" text-anchor="middle" font-size="12" fill="#4a5a75">dashboards — multi-cluster</text>
+</g>
+<text x="380" y="99" text-anchor="middle" font-size="12" fill="#8b98ad" font-family="Segoe UI">QUERY PROCESSING — independent muscle, no sharing between them</text>
+
+<line x1="140" y1="182" x2="140" y2="220" stroke="#8b98ad" stroke-width="1.5"/>
+<line x1="380" y1="182" x2="380" y2="220" stroke="#8b98ad" stroke-width="1.5"/>
+<line x1="620" y1="182" x2="620" y2="220" stroke="#8b98ad" stroke-width="1.5"/>
+
+<rect x="20" y="220" width="720" height="62" rx="10" fill="#e9f5ef" stroke="#2f8f6b"/>
+<text x="380" y="246" text-anchor="middle" font-size="15" font-weight="700" fill="#1d6b4f" font-family="Segoe UI">DATABASE STORAGE — one shared copy</text>
+<text x="380" y="268" text-anchor="middle" font-size="12.5" fill="#4a5a75" font-family="Segoe UI">compressed columnar micro-partitions in cloud object storage</text>
+</svg>
+<figcaption>Storage is shared and central. Compute is separate clusters — which is why one team&apos;s heavy query cannot slow another team down.</figcaption>
+<span class="wm">AiTechs_LVR</span>
+</figure>
+
+  <div class="grid three">
+    <div class="box">
+      <h4>Cloud services layer</h4>
+      <p>The brain. Authentication, access control, the optimiser, metadata, transaction management,
+         and the result cache. You do not pay for it separately in normal use.</p>
+    </div>
+    <div class="box">
+      <h4>Query processing layer</h4>
+      <p>Virtual warehouses — the muscle. Each is an independent MPP cluster. Many warehouses can
+         read the same data at the same time without slowing each other down.</p>
+    </div>
+    <div class="box">
+      <h4>Storage layer</h4>
+      <p>Your data, held in the cloud provider's object storage as compressed, columnar
+         micro-partitions. You cannot see the files; Snowflake manages them.</p>
+    </div>
+  </div>
+
+  <h3>Shared disk vs shared nothing vs Snowflake</h3>
+  <table>
+    <tr><th style="width:24%">Model</th><th>How it works</th><th>Weakness</th></tr>
+    <tr><td><strong>Shared disk</strong></td><td>Many compute nodes, one common storage.</td><td>Storage becomes the bottleneck; nodes fight over it.</td></tr>
+    <tr><td><strong>Shared nothing</strong></td><td>Each node owns its slice of data and its own disk.</td><td>Scaling means physically redistributing data; compute and storage must grow together.</td></tr>
+    <tr><td><strong>Snowflake (hybrid)</strong></td><td>Central shared storage, plus shared-nothing compute clusters that cache what they need locally.</td><td>Takes the benefits of both: scale compute and storage independently.</td></tr>
+  </table>
+
+  <div class="callout">
+    <strong>Say this sentence and the question is answered</strong>
+    <p>Snowflake separates storage from compute. Storage is shared and central; compute is
+       independent clusters. That is why the finance team's heavy query cannot slow down the loading
+       pipeline, and why you can resize a warehouse without touching a single byte of data.</p>
+  </div>
+
+  <h3>Micro-partitions</h3>
+  <p>Snowflake automatically splits table data into micro-partitions of roughly 50–500 MB of
+     uncompressed data, stored columnar. For each one it keeps metadata — the min and max of every
+     column, distinct counts, null counts.</p>
+  <p>When you filter on a column, the optimiser reads that metadata and skips partitions that cannot
+     possibly match. This is <strong>partition pruning</strong>, and it is the reason a well-filtered
+     query on a billion-row table can finish in seconds.</p>
+
+  <figure class="fig">
+<svg viewBox="0 0 760 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Micro-partition pruning">
+<text x="20" y="24" font-size="13" font-weight="700" fill="#152238" font-family="Segoe UI">Query:  WHERE sale_date = &apos;2026-03-15&apos;</text>
+<g font-family="Segoe UI">
+<rect x="20" y="46" width="168" height="86" rx="8" fill="#f5f7fa" stroke="#d6dde8"/>
+<text x="104" y="70" text-anchor="middle" font-size="12.5" font-weight="700" fill="#8b98ad">Partition 1</text>
+<text x="104" y="92" text-anchor="middle" font-size="11.5" fill="#8b98ad">min 2026-01-01</text>
+<text x="104" y="108" text-anchor="middle" font-size="11.5" fill="#8b98ad">max 2026-01-31</text>
+<text x="104" y="125" text-anchor="middle" font-size="11.5" font-weight="700" fill="#a7b2c2">skipped</text>
+
+<rect x="204" y="46" width="168" height="86" rx="8" fill="#f5f7fa" stroke="#d6dde8"/>
+<text x="288" y="70" text-anchor="middle" font-size="12.5" font-weight="700" fill="#8b98ad">Partition 2</text>
+<text x="288" y="92" text-anchor="middle" font-size="11.5" fill="#8b98ad">min 2026-02-01</text>
+<text x="288" y="108" text-anchor="middle" font-size="11.5" fill="#8b98ad">max 2026-02-28</text>
+<text x="288" y="125" text-anchor="middle" font-size="11.5" font-weight="700" fill="#a7b2c2">skipped</text>
+
+<rect x="388" y="42" width="168" height="94" rx="8" fill="#eaf1fa" stroke="#1f5fa8" stroke-width="2"/>
+<text x="472" y="68" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1f5fa8">Partition 3</text>
+<text x="472" y="90" text-anchor="middle" font-size="11.5" fill="#1f5fa8">min 2026-03-01</text>
+<text x="472" y="106" text-anchor="middle" font-size="11.5" fill="#1f5fa8">max 2026-03-31</text>
+<text x="472" y="125" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1f5fa8">READ THIS ONE</text>
+
+<rect x="572" y="46" width="168" height="86" rx="8" fill="#f5f7fa" stroke="#d6dde8"/>
+<text x="656" y="70" text-anchor="middle" font-size="12.5" font-weight="700" fill="#8b98ad">Partition 4</text>
+<text x="656" y="92" text-anchor="middle" font-size="11.5" fill="#8b98ad">min 2026-04-01</text>
+<text x="656" y="108" text-anchor="middle" font-size="11.5" fill="#8b98ad">max 2026-04-30</text>
+<text x="656" y="125" text-anchor="middle" font-size="11.5" font-weight="700" fill="#a7b2c2">skipped</text>
+</g>
+<rect x="20" y="160" width="720" height="70" rx="9" fill="#e9f5ef" stroke="#2f8f6b"/>
+<text x="380" y="186" text-anchor="middle" font-size="13" font-weight="700" fill="#1d6b4f" font-family="Segoe UI">Snowflake reads the min/max label on each shelf before opening it</text>
+<text x="380" y="210" text-anchor="middle" font-size="12.5" fill="#4a5a75" font-family="Segoe UI">1 partition scanned out of 4 — this is partition pruning, and it is automatic</text>
+</svg>
+<figcaption>Every micro-partition carries a min/max label. The optimiser reads the labels and opens only the shelves that could match.</figcaption>
+<span class="wm">AiTechs_LVR</span>
+</figure>
+
+  <div class="callout hook">
+    <strong>Picture for micro-partitions</strong>
+    <p>A library where every shelf has a label saying "surnames Ka to Ku". Looking for "Kumar", you
+       walk past every shelf that cannot contain it. You never open those shelves at all.</p>
+  </div>
+</section>
+
+<!-- ===================== M4 ===================== -->
+<section id="m4">
+  <div class="eyebrow">COMPUTE AND COST</div>
+  <h2>4. Virtual Warehouse, Cache, Resource Monitor</h2>
+  <p class="sub">Where the money goes, and how to stop it going there.</p>
+
+  <h3>Virtual warehouse</h3>
+  <p>A warehouse is compute — it does not store anything. Sizes go XS, S, M, L, XL and upward, and
+     each step doubles both the compute power and the credits per hour. An XS burns 1 credit/hour,
+     S burns 2, M burns 4, and so on.</p>
+
+  <pre><span class="lbl">CREATING A SENSIBLE WAREHOUSE</span><span class="k">CREATE WAREHOUSE</span> WH_TRANSFORM <span class="k">WITH</span>
+  WAREHOUSE_SIZE = <span class="s">'MEDIUM'</span>
+  AUTO_SUSPEND   = 60          <span class="c">-- seconds of idleness before it sleeps</span>
+  AUTO_RESUME    = TRUE        <span class="c">-- wakes on the next query</span>
+  INITIALLY_SUSPENDED = TRUE
+  MIN_CLUSTER_COUNT = 1        <span class="c">-- multi-cluster: Enterprise edition</span>
+  MAX_CLUSTER_COUNT = 3
+  SCALING_POLICY = <span class="s">'STANDARD'</span>;</pre>
+
+  <div class="grid">
+    <div class="box">
+      <h4>Scale up — a bigger size</h4>
+      <p>Fixes one slow, heavy query: large joins, big sorts, queries spilling to disk. More power
+         per query.</p>
+    </div>
+    <div class="box">
+      <h4>Scale out — more clusters</h4>
+      <p>Fixes many users queuing at once. Extra clusters start automatically and shut down when the
+         queue clears. More queries at the same time, same power each.</p>
+    </div>
+  </div>
+
+  <figure class="fig">
+<svg viewBox="0 0 760 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Scale up versus scale out" font-family="Segoe UI">
+<text x="180" y="22" text-anchor="middle" font-size="14" font-weight="700" fill="#152238">SCALE UP — bigger size</text>
+<text x="180" y="42" text-anchor="middle" font-size="12" fill="#4a5a75">one query is slow</text>
+<rect x="70" y="56" width="60" height="60" rx="7" fill="#fff" stroke="#d6dde8"/>
+<text x="100" y="92" text-anchor="middle" font-size="12" fill="#8b98ad">S</text>
+<text x="152" y="92" text-anchor="middle" font-size="18" fill="#8b98ad">→</text>
+<rect x="176" y="42" width="114" height="88" rx="8" fill="#eaf1fa" stroke="#1f5fa8" stroke-width="2"/>
+<text x="233" y="92" text-anchor="middle" font-size="15" font-weight="700" fill="#1f5fa8">LARGE</text>
+<text x="180" y="152" text-anchor="middle" font-size="12" fill="#4a5a75">more power for each query</text>
+<text x="180" y="172" text-anchor="middle" font-size="12" fill="#4a5a75">fixes spilling and big joins</text>
+
+<line x1="380" y1="20" x2="380" y2="190" stroke="#e2e7ef" stroke-width="2"/>
+
+<text x="570" y="22" text-anchor="middle" font-size="14" font-weight="700" fill="#152238">SCALE OUT — more clusters</text>
+<text x="570" y="42" text-anchor="middle" font-size="12" fill="#4a5a75">fifty people are queuing</text>
+<rect x="440" y="56" width="70" height="58" rx="7" fill="#eaf1fa" stroke="#1f5fa8"/>
+<text x="475" y="90" text-anchor="middle" font-size="12" font-weight="700" fill="#1f5fa8">M</text>
+<rect x="530" y="56" width="70" height="58" rx="7" fill="#eaf1fa" stroke="#1f5fa8"/>
+<text x="565" y="90" text-anchor="middle" font-size="12" font-weight="700" fill="#1f5fa8">M</text>
+<rect x="620" y="56" width="70" height="58" rx="7" fill="#eaf1fa" stroke="#1f5fa8" stroke-dasharray="4 3"/>
+<text x="655" y="90" text-anchor="middle" font-size="12" font-weight="700" fill="#1f5fa8">M</text>
+<text x="570" y="152" text-anchor="middle" font-size="12" fill="#4a5a75">same power each, many at once</text>
+<text x="570" y="172" text-anchor="middle" font-size="12" fill="#4a5a75">extra clusters start and stop on their own</text>
+</svg>
+<figcaption>One slow query needs a bigger warehouse. Many waiting users need more clusters. Different problems, different fixes.</figcaption>
+<span class="wm">AiTechs_LVR</span>
+</figure>
+
+  <div class="callout warn">
+    <strong>Scale up or scale out?</strong>
+    <p>One query is slow → scale up. Fifty people are waiting → scale out. Interviewers ask this
+       exact question, and answering it backwards is a common trip-up.</p>
+  </div>
+
+  <h3>Cache — the three types</h3>
+  <table>
+    <tr><th style="width:24%">Cache</th><th>Where it lives</th><th>Behaviour</th></tr>
+    <tr><td><strong>Result cache</strong></td><td>Cloud services layer</td><td>Holds query results for 24 hours. If the same query text runs on unchanged data, the result comes back instantly and costs no compute.</td></tr>
+    <tr><td><strong>Local disk cache</strong></td><td>On the warehouse's SSDs</td><td>Holds micro-partitions the warehouse recently read. Lost when the warehouse suspends.</td></tr>
+    <tr><td><strong>Metadata cache</strong></td><td>Cloud services layer</td><td>Statistics like row counts and min/max. This is why <code>SELECT COUNT(*)</code> returns without starting a warehouse.</td></tr>
+  </table>
+
+  <div class="callout">
+    <strong>The classic follow-up: why did my second run get slower?</strong>
+    <p>Because the warehouse suspended between runs and the local disk cache was thrown away. That
+       is also the honest trade-off of aggressive auto-suspend — you save credits but lose warm
+       cache. Sixty seconds is the usual compromise.</p>
+  </div>
+
+  <h3>Resource monitor</h3>
+  <p>A credit budget with automatic actions. Set it at account level or per warehouse.</p>
+  <pre><span class="lbl">SPEND CONTROL</span><span class="k">CREATE RESOURCE MONITOR</span> RM_MONTHLY <span class="k">WITH</span>
+  CREDIT_QUOTA = 500
+  FREQUENCY = MONTHLY
+  START_TIMESTAMP = IMMEDIATELY
+  TRIGGERS
+    <span class="k">ON</span> 75 PERCENT <span class="k">DO</span> NOTIFY
+    <span class="k">ON</span> 90 PERCENT <span class="k">DO</span> SUSPEND            <span class="c">-- lets running queries finish</span>
+    <span class="k">ON</span> 100 PERCENT <span class="k">DO</span> SUSPEND_IMMEDIATE; <span class="c">-- kills running queries</span>
+
+<span class="k">ALTER WAREHOUSE</span> WH_TRANSFORM <span class="k">SET</span> RESOURCE_MONITOR = RM_MONTHLY;</pre>
+  <p>Only ACCOUNTADMIN can create these. <code>SUSPEND</code> is polite, <code>SUSPEND_IMMEDIATE</code>
+     is not — know that difference.</p>
+</section>
+
+<!-- ===================== M5 ===================== -->
+<section id="m5">
+  <div class="eyebrow">OBJECT HIERARCHY</div>
+  <h2>5. Database, Schema &amp; Tables</h2>
+  <p class="sub">The object hierarchy, and the four table types you must be able to compare.</p>
+
+  <div class="flow">
+    <span class="step">Account</span><span class="ar">→</span>
+    <span class="step">Database</span><span class="ar">→</span>
+    <span class="step">Schema</span><span class="ar">→</span>
+    <span class="step">Table / View / Stage / Pipe</span>
+  </div>
+
+  <h3>Table types</h3>
+  <table>
+    <tr><th style="width:20%">Type</th><th>Lifetime</th><th>Time Travel</th><th>Fail-safe</th><th>Use it for</th></tr>
+    <tr><td><strong>Permanent</strong></td><td>Until dropped</td><td>0–90 days</td><td>7 days</td><td>Curated and production data</td></tr>
+    <tr><td><strong>Transient</strong></td><td>Until dropped</td><td>0–1 day</td><td>None</td><td>Staging layers — cheaper storage</td></tr>
+    <tr><td><strong>Temporary</strong></td><td>Your session only</td><td>0–1 day</td><td>None</td><td>Scratch work inside a script</td></tr>
+    <tr><td><strong>External</strong></td><td>Points at files</td><td>None</td><td>None</td><td>Querying data left in S3 or Blob</td></tr>
+  </table>
+
+  <div class="callout hook">
+    <strong>Fail-safe explained simply</strong>
+    <p>Seven extra days after Time Travel expires where only Snowflake support can recover your data.
+       You cannot query it, you cannot switch it off on permanent tables, and you do pay storage for
+       it. That is exactly why staging tables are made transient.</p>
+  </div>
+
+  <pre><span class="lbl">CREATING OBJECTS</span><span class="k">CREATE DATABASE</span> SALES_DB;
+<span class="k">CREATE SCHEMA</span> SALES_DB.RAW;
+
+<span class="k">CREATE TABLE</span> SALES_DB.RAW.ORDERS (
+  order_id    NUMBER <span class="k">AUTOINCREMENT</span>,
+  cust_id     NUMBER,
+  order_date  DATE,
+  amount      NUMBER(12,2),
+  load_ts     TIMESTAMP_NTZ <span class="k">DEFAULT</span> CURRENT_TIMESTAMP()
+) DATA_RETENTION_TIME_IN_DAYS = 7;
+
+<span class="k">CREATE TRANSIENT TABLE</span> SALES_DB.STG.ORDERS_STG <span class="k">LIKE</span> SALES_DB.RAW.ORDERS;
+<span class="k">CREATE TABLE</span> ORDERS_BACKUP <span class="k">AS SELECT</span> * <span class="k">FROM</span> ORDERS;   <span class="c">-- CTAS</span></pre>
+
+  <div class="callout warn">
+    <strong>Constraints are documentation, not enforcement</strong>
+    <p>Snowflake accepts PRIMARY KEY and FOREIGN KEY declarations but does not enforce them — only
+       NOT NULL is enforced. They exist for the optimiser and for tools reading your metadata. Say
+       this in an interview and it lands well, because many candidates assume otherwise.</p>
+  </div>
+</section>
+
+<!-- ===================== M6 ===================== -->
+<section id="m6">
+  <div class="eyebrow">DATA PROTECTION</div>
+  <h2>6. Time Travel &amp; Zero Copy Cloning</h2>
+  <p class="sub">Two features that exist because of how micro-partitions work.</p>
+
+  <h3>Time Travel</h3>
+  <p>Every change writes new micro-partitions instead of overwriting old ones. The old ones stay for
+     the retention period, so Snowflake can show you the table as it was at any moment inside that
+     window. Standard edition gives 1 day; Enterprise allows up to 90 on permanent tables.</p>
+
+  <pre><span class="lbl">THREE WAYS TO GO BACK</span><span class="k">SELECT</span> * <span class="k">FROM</span> orders <span class="k">AT</span> (OFFSET =&gt; -600);                      <span class="c">-- 10 minutes ago</span>
+<span class="k">SELECT</span> * <span class="k">FROM</span> orders <span class="k">AT</span> (TIMESTAMP =&gt; <span class="s">'2026-09-01 09:00:00'</span>::TIMESTAMP_LTZ);
+<span class="k">SELECT</span> * <span class="k">FROM</span> orders <span class="k">BEFORE</span> (STATEMENT =&gt; <span class="s">'01a2b3c4-...'</span>);       <span class="c">-- just before that query</span>
+
+<span class="c">-- restore a table to a point in time</span>
+<span class="k">CREATE OR REPLACE TABLE</span> orders <span class="k">CLONE</span> orders <span class="k">BEFORE</span> (STATEMENT =&gt; <span class="s">'&lt;query_id&gt;'</span>);
+
+<span class="c">-- and if the whole object was dropped</span>
+<span class="k">UNDROP TABLE</span> orders;
+<span class="k">UNDROP SCHEMA</span> raw;
+<span class="k">UNDROP DATABASE</span> sales_db;</pre>
+
+  <div class="callout hook">
+    <strong>Picture</strong>
+    <p>Time Travel is CCTV footage of your table. You cannot stop the accident, but you can rewind
+       and see exactly what the data looked like at 1:59 pm — and copy that version back.</p>
+  </div>
+
+  <h3>Zero copy cloning</h3>
+  <p>A clone copies metadata only. Both tables point at the same micro-partitions, so the clone is
+     instant and costs no extra storage. Storage only grows when one side changes — then just the
+     changed partitions are written.</p>
+
+  <pre><span class="lbl">CLONING</span><span class="k">CREATE DATABASE</span> UAT_DB <span class="k">CLONE</span> PROD_DB;                <span class="c">-- whole environment, seconds</span>
+<span class="k">CREATE TABLE</span> orders_test <span class="k">CLONE</span> orders;
+<span class="k">CREATE TABLE</span> orders_yesterday <span class="k">CLONE</span> orders <span class="k">AT</span> (OFFSET =&gt; -86400);  <span class="c">-- clone + time travel</span></pre>
+
+  <figure class="fig">
+<svg viewBox="0 0 760 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Time travel and cloning" font-family="Segoe UI">
+<line x1="40" y1="80" x2="720" y2="80" stroke="#8b98ad" stroke-width="2"/>
+<g font-size="11.5" fill="#4a5a75">
+<circle cx="120" cy="80" r="7" fill="#2f8f6b"/><text x="120" y="60" text-anchor="middle">good data</text><text x="120" y="104" text-anchor="middle">09:00</text>
+<circle cx="330" cy="80" r="7" fill="#2f8f6b"/><text x="330" y="60" text-anchor="middle">good data</text><text x="330" y="104" text-anchor="middle">13:59</text>
+<circle cx="470" cy="80" r="9" fill="#c98a1e"/><text x="470" y="58" text-anchor="middle" font-weight="700" fill="#8a5a12">bad DELETE runs</text><text x="470" y="104" text-anchor="middle">14:00</text>
+<circle cx="660" cy="80" r="7" fill="#1f5fa8"/><text x="660" y="60" text-anchor="middle">you notice</text><text x="660" y="104" text-anchor="middle">14:20</text>
+</g>
+<path d="M655 92 C600 150, 400 150, 335 92" fill="none" stroke="#1f5fa8" stroke-width="2" stroke-dasharray="5 4"/>
+<text x="495" y="152" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1f5fa8" font-family="Segoe UI">rewind — AT / BEFORE</text>
+<rect x="40" y="172" width="330" height="46" rx="9" fill="#eaf1fa" stroke="#1f5fa8"/>
+<text x="205" y="191" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1f5fa8">TIME TRAVEL = CCTV rewind</text>
+<text x="205" y="209" text-anchor="middle" font-size="11.5" fill="#4a5a75">read the table as it was, inside retention</text>
+<rect x="390" y="172" width="330" height="46" rx="9" fill="#e9f5ef" stroke="#2f8f6b"/>
+<text x="555" y="191" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1d6b4f">ZERO COPY CLONE = free Xerox</text>
+<text x="555" y="209" text-anchor="middle" font-size="11.5" fill="#4a5a75">same partitions, no storage until you change one</text>
+</svg>
+<figcaption>Time Travel rewinds; cloning branches. Together they turn a frightening deployment into a reversible one.</figcaption>
+<span class="wm">AiTechs_LVR</span>
+</figure>
+
+  <div class="callout">
+    <strong>Where you actually use these two together</strong>
+    <p>Before every production deployment, clone the database. If the release goes wrong, restore
+       from the clone. It costs nothing while nothing changes, and it converts a frightening
+       deployment into a reversible one. That answer covers rollback strategy in a CI/CD question too.</p>
+  </div>
+
+  <div class="callout warn">
+    <strong>What a clone does not carry</strong>
+    <p>Clones are independent after creation — changes on one side never affect the other. External
+       tables and internal named stages inside a cloned database do not bring their files along, and
+       pipes need care. Also, cloning does not copy privileges granted on the source's child objects
+       unless you ask for it.</p>
+  </div>
+</section>
+
+<!-- ===================== M7 ===================== -->
+<section id="m7">
+  <div class="eyebrow">SEMI-STRUCTURED DATA</div>
+  <h2>7. JSON &amp; XML — Semi-structured Data</h2>
+  <p class="sub">Snowflake stores nested data natively. No shredding, no separate NoSQL store.</p>
+
+  <h3>The three special types</h3>
+  <ul class="tight">
+    <li><strong>VARIANT</strong> — holds any semi-structured value, up to 16 MB compressed per row.</li>
+    <li><strong>OBJECT</strong> — a key-value map.</li>
+    <li><strong>ARRAY</strong> — an ordered list.</li>
+  </ul>
+
+  <pre><span class="lbl">READING JSON</span><span class="k">CREATE TABLE</span> raw_orders (payload VARIANT);
+
+<span class="c">-- colon walks into keys, dot works too, [] indexes arrays, :: casts</span>
+<span class="k">SELECT</span> payload:order_id::STRING        <span class="k">AS</span> order_id,
+       payload:customer.name::STRING    <span class="k">AS</span> cust_name,
+       payload:items[0].price::NUMBER   <span class="k">AS</span> first_price
+<span class="k">FROM</span> raw_orders;</pre>
+
+  <pre><span class="lbl">FLATTEN — TURNING AN ARRAY INTO ROWS</span><span class="k">SELECT</span> r.payload:order_id::STRING <span class="k">AS</span> order_id,
+       f.value:sku::STRING         <span class="k">AS</span> sku,
+       f.value:qty::INT            <span class="k">AS</span> qty,
+       f.index                     <span class="k">AS</span> line_no
+<span class="k">FROM</span> raw_orders r,
+<span class="k">LATERAL</span> FLATTEN(input =&gt; r.payload:items) f;</pre>
+
+  <div class="callout hook">
+    <strong>FLATTEN in one image</strong>
+    <p>A lunchbox with four compartments arrives as one row. FLATTEN opens it and lays each item on
+       the table as its own row, keeping a label that says which lunchbox it came from.</p>
+  </div>
+
+  <h3>Loading JSON files</h3>
+  <pre><span class="lbl">FILE FORMAT AND COPY</span><span class="k">CREATE FILE FORMAT</span> ff_json TYPE=JSON STRIP_OUTER_ARRAY=TRUE;
+
+<span class="k">COPY INTO</span> raw_orders
+<span class="k">FROM</span> @my_stage/orders/
+FILE_FORMAT = ff_json;
+<span class="c">-- STRIP_OUTER_ARRAY splits a top-level [ {...}, {...} ] into one row per object</span></pre>
+
+  <h3>XML</h3>
+  <p>XML also loads into a VARIANT column, using <code>TYPE=XML</code>. Navigation is clumsier than
+     JSON because you deal with tags and attributes.</p>
+  <pre><span class="lbl">XML NAVIGATION</span><span class="k">CREATE FILE FORMAT</span> ff_xml TYPE=XML STRIP_OUTER_ELEMENT=TRUE;
+
+<span class="k">SELECT</span> XMLGET(payload, <span class="s">'customer'</span>):<span class="s">"$"</span>::STRING       <span class="k">AS</span> customer,
+       GET(XMLGET(payload, <span class="s">'order'</span>), <span class="s">'@id'</span>)::STRING <span class="k">AS</span> order_id
+<span class="k">FROM</span> raw_xml;
+<span class="c">-- XMLGET picks a child element; "$" is its text; '@x' is an attribute</span></pre>
+
+  <div class="callout">
+    <strong>The design question behind this topic</strong>
+    <p>Load semi-structured data into VARIANT in the RAW layer exactly as it arrived, then flatten it
+       into proper typed columns in staging. Keeping the original means a changed source schema
+       never loses data — you just re-run the flattening.</p>
+  </div>
+</section>
+
+<!-- ===================== M8 ===================== -->
+<section id="m8">
+  <div class="eyebrow">GETTING DATA IN</div>
+  <h2>8. Stages &amp; Loading</h2>
+  <p class="sub">How files actually get into tables — the most practical topic in the course.</p>
+
+  <figure class="fig">
+<svg viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Loading path" font-family="Segoe UI">
+<rect x="16" y="60" width="130" height="66" rx="9" fill="#fff" stroke="#152a45"/>
+<text x="81" y="88" text-anchor="middle" font-size="12.5" font-weight="700" fill="#152238">Files</text>
+<text x="81" y="107" text-anchor="middle" font-size="11.5" fill="#4a5a75">CSV · JSON · Parquet</text>
+<text x="163" y="98" font-size="17" fill="#8b98ad">→</text>
+
+<rect x="190" y="60" width="150" height="66" rx="9" fill="#f5f7fa" stroke="#d6dde8"/>
+<text x="265" y="88" text-anchor="middle" font-size="12.5" font-weight="700" fill="#152238">STAGE</text>
+<text x="265" y="107" text-anchor="middle" font-size="11.5" fill="#4a5a75">reception desk</text>
+<text x="357" y="98" font-size="17" fill="#8b98ad">→</text>
+
+<rect x="384" y="26" width="196" height="58" rx="9" fill="#eaf1fa" stroke="#1f5fa8"/>
+<text x="482" y="49" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1f5fa8">SNOWPIPE</text>
+<text x="482" y="68" text-anchor="middle" font-size="11.5" fill="#4a5a75">automatic door · serverless</text>
+
+<rect x="384" y="102" width="196" height="58" rx="9" fill="#fff" stroke="#152a45"/>
+<text x="482" y="125" text-anchor="middle" font-size="12.5" font-weight="700" fill="#152238">COPY INTO</text>
+<text x="482" y="144" text-anchor="middle" font-size="11.5" fill="#4a5a75">you run it · your warehouse</text>
+<text x="596" y="98" font-size="17" fill="#8b98ad">→</text>
+
+<rect x="622" y="60" width="122" height="66" rx="9" fill="#e9f5ef" stroke="#2f8f6b"/>
+<text x="683" y="88" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1d6b4f">TABLE</text>
+<text x="683" y="107" text-anchor="middle" font-size="11.5" fill="#4a5a75">RAW layer</text>
+
+<text x="380" y="186" text-anchor="middle" font-size="12" fill="#4a5a75">file format tells Snowflake how to read the bytes · load history stops the same file loading twice</text>
+</svg>
+<figcaption>Two doors into the same table: Snowpipe opens by itself when a file arrives, COPY opens when you tell it to.</figcaption>
+<span class="wm">AiTechs_LVR</span>
+</figure>
+
+  <h3>Stage types</h3>
+  <table>
+    <tr><th style="width:24%">Stage</th><th>Reference</th><th>When to use</th></tr>
+    <tr><td><strong>User stage</strong></td><td><code>@~</code></td><td>Personal scratch area, one per user.</td></tr>
+    <tr><td><strong>Table stage</strong></td><td><code>@%orders</code></td><td>Automatically tied to one table, no setup.</td></tr>
+    <tr><td><strong>Internal named stage</strong></td><td><code>@my_stage</code></td><td>Shared area you create; the normal choice for internal loads.</td></tr>
+    <tr><td><strong>External stage</strong></td><td><code>@ext_stage</code></td><td>Points at S3, Azure Blob or GCS. What real pipelines use.</td></tr>
+  </table>
+
+  <pre><span class="lbl">EXTERNAL STAGE VIA STORAGE INTEGRATION (THE SECURE WAY)</span><span class="k">CREATE STORAGE INTEGRATION</span> S3_INT
+  TYPE = EXTERNAL_STAGE
+  STORAGE_PROVIDER = <span class="s">'S3'</span>
+  STORAGE_AWS_ROLE_ARN = <span class="s">'arn:aws:iam::123456789012:role/snowflake-role'</span>
+  ENABLED = TRUE
+  STORAGE_ALLOWED_LOCATIONS = (<span class="s">'s3://my-bucket/data/'</span>);
+
+<span class="k">CREATE STAGE</span> ext_stage
+  URL = <span class="s">'s3://my-bucket/data/'</span>
+  STORAGE_INTEGRATION = S3_INT
+  FILE_FORMAT = ff_csv;
+
+<span class="k">LIST</span> @ext_stage;                    <span class="c">-- see what files are there</span>
+<span class="k">SELECT</span> $1, $2, $3 <span class="k">FROM</span> @ext_stage <span class="k">LIMIT</span> 10;   <span class="c">-- peek before loading</span></pre>
+
+  <div class="callout">
+    <strong>Why storage integration and not keys</strong>
+    <p>A storage integration uses a cloud IAM role, so no access key or secret ever sits in your SQL
+       or your Git repo. Interviewers like this answer because it is a security decision, not just
+       syntax.</p>
+  </div>
+
+  <h3>File format</h3>
+  <pre><span class="lbl">THE OPTIONS THAT SAVE YOU</span><span class="k">CREATE FILE FORMAT</span> ff_csv
+  TYPE = CSV
+  FIELD_DELIMITER = <span class="s">','</span>
+  SKIP_HEADER = 1
+  FIELD_OPTIONALLY_ENCLOSED_BY = <span class="s">'"'</span>      <span class="c">-- handles commas inside quotes</span>
+  NULL_IF = (<span class="s">''</span>, <span class="s">'NULL'</span>, <span class="s">'\\N'</span>)
+  EMPTY_FIELD_AS_NULL = TRUE
+  DATE_FORMAT = <span class="s">'YYYY-MM-DD'</span>
+  ERROR_ON_COLUMN_COUNT_MISMATCH = FALSE
+  COMPRESSION = AUTO;                       <span class="c">-- gz, bz2 detected automatically</span></pre>
+
+  <h3>COPY INTO — loading</h3>
+  <pre><span class="lbl">LOAD, WITH THE OPTIONS THAT MATTER</span><span class="k">COPY INTO</span> orders
+<span class="k">FROM</span> @ext_stage/orders/
+FILE_FORMAT = ff_csv
+PATTERN = <span class="s">'.*orders_2026.*[.]csv'</span>
+ON_ERROR = <span class="s">'CONTINUE'</span>          <span class="c">-- ABORT_STATEMENT (default) | SKIP_FILE | CONTINUE</span>
+PURGE = FALSE                     <span class="c">-- TRUE deletes source files after success</span>
+FORCE = FALSE;                    <span class="c">-- TRUE re-loads files already loaded</span>
+
+<span class="c">-- transform while loading: select from the stage, reorder, cast, add columns</span>
+<span class="k">COPY INTO</span> orders (order_id, amount, load_ts)
+<span class="k">FROM</span> (<span class="k">SELECT</span> $1::NUMBER, $3::NUMBER, CURRENT_TIMESTAMP() <span class="k">FROM</span> @ext_stage/orders/)
+FILE_FORMAT = ff_csv;
+
+<span class="c">-- validate first, load nothing</span>
+<span class="k">COPY INTO</span> orders <span class="k">FROM</span> @ext_stage/orders/ FILE_FORMAT=ff_csv VALIDATION_MODE=RETURN_ERRORS;</pre>
+
+  <div class="callout warn">
+    <strong>The load-history rule that trips people up</strong>
+    <p>COPY remembers every filename it has loaded for 64 days and refuses to load the same file
+       again. That is a protection, not a bug. If you genuinely need a reload, use
+       <code>FORCE = TRUE</code> — and be sure you are not about to duplicate rows.</p>
+  </div>
+
+  <h3>Unloading, and local files</h3>
+  <pre><span class="lbl">OUT, AND IN FROM YOUR LAPTOP</span><span class="k">COPY INTO</span> @ext_stage/export/orders_
+<span class="k">FROM</span> (<span class="k">SELECT</span> * <span class="k">FROM</span> orders <span class="k">WHERE</span> order_date &gt;= <span class="s">'2026-01-01'</span>)
+FILE_FORMAT = (TYPE=CSV COMPRESSION=GZIP)
+HEADER = TRUE
+SINGLE = FALSE
+MAX_FILE_SIZE = 50000000;
+
+<span class="c">-- SnowSQL only, not the web UI</span>
+PUT file:///home/rahul/data/orders.csv @my_stage AUTO_COMPRESS=TRUE;
+GET @my_stage/orders.csv.gz file:///home/rahul/download/;</pre>
+
+  <p>Two monitoring views worth knowing: <code>INFORMATION_SCHEMA.COPY_HISTORY</code> and
+     <code>SNOWFLAKE.ACCOUNT_USAGE.LOAD_HISTORY</code>. When someone says "the file did not load",
+     these answer it in one query. Also <code>VALIDATE(orders, JOB_ID =&gt; '_last')</code> shows the
+     rows a load rejected.</p>
+</section>
+
+<!-- ===================== M9 ===================== -->
+<section id="m9">
+  <div class="eyebrow">CONTINUOUS LOADING</div>
+  <h2>9. Snowpipe &amp; External Tables</h2>
+  <p class="sub">Continuous loading, and querying files you never load at all.</p>
+
+  <h3>Snowpipe</h3>
+  <p>A pipe is a COPY statement that runs itself when a file arrives. Auto-ingest works through a
+     cloud notification — SQS on AWS, Event Grid on Azure — so latency is usually under a minute.
+     It runs on Snowflake-managed serverless compute, so no warehouse of yours is billed.</p>
+
+  <pre><span class="lbl">PIPE, AND THE COMMAND YOU WILL ACTUALLY NEED</span><span class="k">CREATE PIPE</span> raw_db.mf.pipe_orders
+  AUTO_INGEST = TRUE
+<span class="k">AS</span>
+  <span class="k">COPY INTO</span> raw_db.mf.orders_raw
+  <span class="k">FROM</span> @ext_stage/orders/
+  FILE_FORMAT = ff_csv;
+
+<span class="k">SHOW PIPES</span>;                                  <span class="c">-- grab notification_channel → put in S3 event config</span>
+<span class="k">SELECT</span> SYSTEM$PIPE_STATUS(<span class="s">'pipe_orders'</span>);      <span class="c">-- executionState, pendingFileCount</span>
+<span class="k">ALTER PIPE</span> pipe_orders <span class="k">REFRESH</span>;                <span class="c">-- pick up files missed while paused</span></pre>
+
+  <table>
+    <tr><th style="width:26%"> </th><th>Snowpipe</th><th>Bulk COPY</th></tr>
+    <tr><td>Trigger</td><td>File arrival event</td><td>You run it, or a task does</td></tr>
+    <tr><td>Compute</td><td>Snowflake serverless</td><td>Your virtual warehouse</td></tr>
+    <tr><td>Best for</td><td>Small files arriving continuously</td><td>Large historical batches</td></tr>
+    <tr><td>Billing</td><td>Per file plus compute seconds</td><td>Warehouse time</td></tr>
+  </table>
+
+  <div class="callout hook">
+    <strong>Picture</strong>
+    <p>Snowpipe is an automatic door: it opens the moment somebody arrives. Bulk COPY is a watchman
+       who opens the gate when you tell him to. For a truckload of luggage, call the watchman.</p>
+  </div>
+
+  <h3>External tables</h3>
+  <p>An external table leaves data in cloud storage and queries it in place. Snowflake stores only
+     metadata. Useful for data lakes, archives and anything you query rarely.</p>
+
+  <pre><span class="lbl">EXTERNAL TABLE WITH PARTITIONS</span><span class="k">CREATE EXTERNAL TABLE</span> ext_orders (
+  order_date DATE <span class="k">AS</span> TO_DATE(SPLIT_PART(METADATA$FILENAME, <span class="s">'/'</span>, 3), <span class="s">'YYYYMMDD'</span>),
+  order_id   NUMBER <span class="k">AS</span> (VALUE:c1::NUMBER),
+  amount     NUMBER <span class="k">AS</span> (VALUE:c3::NUMBER)
+)
+PARTITION BY (order_date)
+LOCATION = @ext_stage/orders/
+FILE_FORMAT = ff_csv
+AUTO_REFRESH = TRUE;</pre>
+
+  <div class="callout warn">
+    <strong>Be honest about the trade-off</strong>
+    <p>External tables are slower than native tables — no micro-partitions, no clustering, weaker
+       pruning. They save storage cost and suit cold data. If a table is queried daily by dashboards,
+       load it properly instead. A materialised view over an external table is the middle path.</p>
+  </div>
+</section>
+
+<!-- ===================== M10 ===================== -->
+<section id="m10">
+  <div class="eyebrow">GOVERNANCE</div>
+  <h2>10. Data Masking &amp; Row Access Policy</h2>
+  <p class="sub">Column-level and row-level security, both driven by the role that is asking.</p>
+
+  <h3>Dynamic data masking</h3>
+  <p>One policy, attached to a column. The same query returns different values depending on who runs
+     it — no separate views, no duplicated tables.</p>
+
+  <pre><span class="lbl">MASKING POLICY</span><span class="k">CREATE MASKING POLICY</span> mp_email <span class="k">AS</span> (val STRING) <span class="k">RETURNS</span> STRING -&gt;
+  <span class="k">CASE</span>
+    <span class="k">WHEN</span> CURRENT_ROLE() <span class="k">IN</span> (<span class="s">'R_ADMIN'</span>, <span class="s">'R_COMPLIANCE'</span>) <span class="k">THEN</span> val
+    <span class="k">WHEN</span> CURRENT_ROLE() = <span class="s">'R_ANALYST'</span> <span class="k">THEN</span> REGEXP_REPLACE(val, <span class="s">'.+@'</span>, <span class="s">'****@'</span>)
+    <span class="k">ELSE</span> <span class="s">'**MASKED**'</span>
+  <span class="k">END</span>;
+
+<span class="k">ALTER TABLE</span> customers <span class="k">MODIFY COLUMN</span> email <span class="k">SET MASKING POLICY</span> mp_email;
+<span class="k">ALTER TABLE</span> customers <span class="k">MODIFY COLUMN</span> email <span class="k">UNSET MASKING POLICY</span>;</pre>
+
+  <h3>Row access policy</h3>
+  <p>Same idea, but it decides which <em>rows</em> a role can see. The usual pattern is a mapping
+     table of role to region, joined inside the policy.</p>
+
+  <pre><span class="lbl">ROW ACCESS POLICY WITH A MAPPING TABLE</span><span class="k">CREATE ROW ACCESS POLICY</span> rap_region <span class="k">AS</span> (region STRING) <span class="k">RETURNS</span> BOOLEAN -&gt;
+  CURRENT_ROLE() = <span class="s">'R_ADMIN'</span>
+  <span class="k">OR EXISTS</span> (
+      <span class="k">SELECT</span> 1 <span class="k">FROM</span> sec.role_region_map m
+       <span class="k">WHERE</span> m.role_name = CURRENT_ROLE()
+         <span class="k">AND</span> m.region    = region);
+
+<span class="k">ALTER TABLE</span> sales <span class="k">ADD ROW ACCESS POLICY</span> rap_region <span class="k">ON</span> (region);</pre>
+
+  <div class="callout">
+    <strong>How the two combine</strong>
+    <p>Row access policies run first and decide which rows come back; masking then decides what the
+       columns look like. A South-region analyst sees only South rows, with the email column already
+       masked. One table serves everybody, which is the whole point.</p>
+  </div>
+
+  <div class="callout hook">
+    <strong>Pictures</strong>
+    <p>Masking is an Aadhaar printout showing XXXX-1234 — the row is there, the value is hidden.
+       A row access policy is the security guard at the gate who only lets your own department's
+       files reach your desk.</p>
+  </div>
+
+  <p>Related governance features worth naming: <strong>object tagging</strong> (tag columns as PII,
+     then attach a masking policy to the tag so it applies everywhere), and
+     <code>SNOWFLAKE.ACCOUNT_USAGE.ACCESS_HISTORY</code> for the audit trail of who read what.</p>
+</section>
+
+<!-- ===================== M11 ===================== -->
+<section id="m11">
+  <div class="eyebrow">NATIVE PIPELINES</div>
+  <h2>11. Streams &amp; Tasks</h2>
+  <p class="sub">Change tracking and scheduling — together they are Snowflake's native pipeline engine.</p>
+
+  <h3>Stream</h3>
+  <p>A stream sits on a table and records an <em>offset</em>. Query it and you see the rows that
+     changed since that offset, plus three metadata columns. Consuming the stream in a DML statement
+     advances the offset — which is what makes processing exactly-once.</p>
+
+  <table>
+    <tr><th style="width:32%">Metadata column</th><th>Meaning</th></tr>
+    <tr><td><code>METADATA$ACTION</code></td><td>INSERT or DELETE</td></tr>
+    <tr><td><code>METADATA$ISUPDATE</code></td><td>TRUE when the pair of rows represents an update</td></tr>
+    <tr><td><code>METADATA$ROW_ID</code></td><td>Stable identifier for the row</td></tr>
+  </table>
+
+  <pre><span class="lbl">STREAM TYPES</span><span class="k">CREATE STREAM</span> str_orders <span class="k">ON TABLE</span> raw.orders;                          <span class="c">-- standard: all DML</span>
+<span class="k">CREATE STREAM</span> str_ins <span class="k">ON TABLE</span> raw.orders APPEND_ONLY = TRUE;          <span class="c">-- inserts only, cheaper</span>
+<span class="k">CREATE STREAM</span> str_ext <span class="k">ON EXTERNAL TABLE</span> ext_orders INSERT_ONLY = TRUE;
+
+<span class="k">SELECT</span> SYSTEM$STREAM_HAS_DATA(<span class="s">'str_orders'</span>);   <span class="c">-- TRUE / FALSE</span></pre>
+
+  <div class="callout warn">
+    <strong>Staleness — the question that separates readers from users</strong>
+    <p>A stream becomes stale if it is not consumed within the source table's data retention period,
+       and once stale it cannot be read. Keep retention sensible on tables that feed streams, and
+       consume regularly. Also: reading a stream does not advance it — only using it in a DML does.</p>
+  </div>
+
+  <figure class="fig">
+<svg viewBox="0 0 760 235" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Streams and tasks" font-family="Segoe UI">
+<rect x="16" y="46" width="150" height="72" rx="9" fill="#fff" stroke="#152a45"/>
+<text x="91" y="74" text-anchor="middle" font-size="12.5" font-weight="700" fill="#152238">RAW table</text>
+<text x="91" y="94" text-anchor="middle" font-size="11.5" fill="#4a5a75">new rows arrive</text>
+<text x="180" y="88" font-size="17" fill="#8b98ad">→</text>
+
+<rect x="206" y="46" width="164" height="72" rx="9" fill="#eaf1fa" stroke="#1f5fa8"/>
+<text x="288" y="70" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1f5fa8">STREAM</text>
+<text x="288" y="90" text-anchor="middle" font-size="11.5" fill="#4a5a75">unread badge</text>
+<circle cx="352" cy="56" r="13" fill="#c0392b"/><text x="352" y="61" text-anchor="middle" font-size="11.5" font-weight="700" fill="#fff">7</text>
+<text x="288" y="108" text-anchor="middle" font-size="11" fill="#4a5a75">offset moves only when consumed</text>
+<text x="384" y="88" font-size="17" fill="#8b98ad">→</text>
+
+<rect x="410" y="46" width="100" height="72" rx="9" fill="#fff" stroke="#152a45"/>
+<text x="460" y="76" text-anchor="middle" font-size="12.5" font-weight="700" fill="#152238">T1</text>
+<text x="460" y="95" text-anchor="middle" font-size="11" fill="#4a5a75">staging</text>
+<text x="519" y="88" font-size="16" fill="#8b98ad">→</text>
+<rect x="540" y="46" width="100" height="72" rx="9" fill="#fff" stroke="#152a45"/>
+<text x="590" y="76" text-anchor="middle" font-size="12.5" font-weight="700" fill="#152238">T2</text>
+<text x="590" y="95" text-anchor="middle" font-size="11" fill="#4a5a75">facts</text>
+<text x="649" y="88" font-size="16" fill="#8b98ad">→</text>
+<rect x="666" y="46" width="80" height="72" rx="9" fill="#e9f5ef" stroke="#2f8f6b"/>
+<text x="706" y="76" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1d6b4f">T3</text>
+<text x="706" y="95" text-anchor="middle" font-size="11" fill="#4a5a75">checks</text>
+
+<text x="578" y="30" text-anchor="middle" font-size="12" fill="#8b98ad">TASK DAG — a relay race, baton passes only if the previous one finished</text>
+
+<rect x="16" y="150" width="728" height="66" rx="9" fill="#fdf4e3" stroke="#c98a1e"/>
+<text x="380" y="176" text-anchor="middle" font-size="12.8" font-weight="700" fill="#8a5a12">WHEN SYSTEM$STREAM_HAS_DATA(...)  →  nothing new means the task skips entirely</text>
+<text x="380" y="199" text-anchor="middle" font-size="12" fill="#4a5a75">a skipped task never starts the warehouse, so an empty night costs nothing</text>
+</svg>
+<figcaption>The stream says what is new; the task DAG decides what happens next, and skips entirely when nothing is new.</figcaption>
+<span class="wm">AiTechs_LVR</span>
+</figure>
+
+  <h3>Task</h3>
+  <pre><span class="lbl">A TASK DAG</span><span class="k">CREATE TASK</span> t1_stage
+  WAREHOUSE = wh_transform
+  SCHEDULE  = <span class="s">'USING CRON 0 2 * * * Asia/Kolkata'</span>     <span class="c">-- or '15 MINUTE'</span>
+  <span class="k">WHEN</span> SYSTEM$STREAM_HAS_DATA(<span class="s">'str_orders'</span>)          <span class="c">-- skip = no compute = no cost</span>
+<span class="k">AS</span>
+  <span class="k">MERGE INTO</span> stg.orders t
+  <span class="k">USING</span> str_orders s <span class="k">ON</span> t.order_id = s.order_id
+  <span class="k">WHEN MATCHED THEN UPDATE SET</span> t.amount = s.amount
+  <span class="k">WHEN NOT MATCHED THEN INSERT</span> (order_id, amount) <span class="k">VALUES</span> (s.order_id, s.amount);
+
+<span class="k">CREATE TASK</span> t2_fact WAREHOUSE=wh_transform <span class="k">AFTER</span> t1_stage <span class="k">AS CALL</span> sp_load_fact();
+<span class="k">CREATE TASK</span> t3_dq   WAREHOUSE=wh_transform <span class="k">AFTER</span> t2_fact  <span class="k">AS CALL</span> sp_reconcile();
+
+<span class="c">-- resume children first, root LAST — a suspended root stops the whole DAG</span>
+<span class="k">ALTER TASK</span> t3_dq <span class="k">RESUME</span>; <span class="k">ALTER TASK</span> t2_fact <span class="k">RESUME</span>; <span class="k">ALTER TASK</span> t1_stage <span class="k">RESUME</span>;
+
+<span class="k">SELECT</span> * <span class="k">FROM TABLE</span>(INFORMATION_SCHEMA.TASK_HISTORY()) <span class="k">ORDER BY</span> scheduled_time <span class="k">DESC</span>;</pre>
+
+  <div class="callout">
+    <strong>Three things to remember about tasks</strong>
+    <p>A new task is created suspended — you must resume it. Only one root task per DAG, and a child
+       cannot have two parents in the classic model. Serverless tasks (omit the warehouse and set
+       <code>USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE</code>) let Snowflake size the compute for you.</p>
+  </div>
+
+  <div class="callout hook">
+    <strong>Pictures</strong>
+    <p>A stream is the WhatsApp unread badge — it shows what is new and clears when you act on it.
+       A task DAG is a relay race, where the baton only passes if the previous runner finished.</p>
+  </div>
+</section>
+
+<!-- ===================== M12 ===================== -->
+<section id="m12">
+  <div class="eyebrow">PRESENTING DATA</div>
+  <h2>12. Views &amp; Dynamic Tables</h2>
+  <p class="sub">Four ways to present data, each with a different cost and freshness trade-off.</p>
+
+  <table>
+    <tr><th style="width:22%">Object</th><th>Stores data?</th><th>Freshness</th><th>Cost</th></tr>
+    <tr><td><strong>Standard view</strong></td><td>No — runs the query each time</td><td>Always current</td><td>Compute at query time</td></tr>
+    <tr><td><strong>Secure view</strong></td><td>No</td><td>Always current</td><td>Slightly slower — optimiser hides internals</td></tr>
+    <tr><td><strong>Materialised view</strong></td><td>Yes</td><td>Auto-maintained by Snowflake</td><td>Storage plus background maintenance</td></tr>
+    <tr><td><strong>Dynamic table</strong></td><td>Yes</td><td>Refreshes to meet your target lag</td><td>Storage plus refresh compute</td></tr>
+  </table>
+
+  <pre><span class="lbl">VIEWS</span><span class="k">CREATE VIEW</span> v_sales <span class="k">AS SELECT</span> region, SUM(amount) amt <span class="k">FROM</span> sales <span class="k">GROUP BY</span> region;
+
+<span class="c">-- secure view: hides the definition and blocks optimiser tricks that could leak rows</span>
+<span class="k">CREATE SECURE VIEW</span> v_customer_sales <span class="k">AS</span>
+<span class="k">SELECT</span> sale_month, region, total_sales <span class="k">FROM</span> cur.monthly_summary;
+<span class="k">GRANT SELECT ON VIEW</span> v_customer_sales <span class="k">TO ROLE</span> r_customer;
+
+<span class="c">-- materialised view: single table only, no joins, limited aggregates</span>
+<span class="k">CREATE MATERIALIZED VIEW</span> mv_daily <span class="k">AS</span>
+<span class="k">SELECT</span> sale_date, region, SUM(amount) amt <span class="k">FROM</span> sales <span class="k">GROUP BY</span> 1,2;</pre>
+
+  <div class="callout warn">
+    <strong>Materialised view limits — asked often</strong>
+    <p>One table only, no joins, no window functions, no ORDER BY, limited aggregate support, and
+       Enterprise edition required. If you need joins with automatic refresh, that is exactly what a
+       dynamic table is for.</p>
+  </div>
+
+  <h3>Dynamic tables</h3>
+  <p>You declare the result you want and a target lag. Snowflake works out how to refresh it —
+     incrementally when it can, fully when it must — and chains dependent dynamic tables
+     automatically. It replaces a lot of stream-plus-task plumbing.</p>
+
+  <pre><span class="lbl">DECLARATIVE PIPELINE</span><span class="k">CREATE DYNAMIC TABLE</span> dt_daily_sales
+  TARGET_LAG = <span class="s">'30 minutes'</span>          <span class="c">-- or 'DOWNSTREAM' to follow the consumer</span>
+  WAREHOUSE  = wh_transform
+<span class="k">AS</span>
+<span class="k">SELECT</span> s.sale_date, c.region, SUM(s.amount) <span class="k">AS</span> total
+<span class="k">FROM</span> stg.sales s <span class="k">JOIN</span> dim.customer c <span class="k">ON</span> s.cust_id = c.cust_id
+<span class="k">GROUP BY</span> 1,2;
+
+<span class="k">ALTER DYNAMIC TABLE</span> dt_daily_sales <span class="k">REFRESH</span>;    <span class="c">-- manual nudge</span></pre>
+
+  <div class="callout">
+    <strong>How to choose, in one line each</strong>
+    <p>Small logic, always fresh → view. Sensitive data going outside → secure view. Repeated heavy
+       aggregate on one table → materialised view. A multi-step transformation chain you would
+       otherwise build with streams and tasks → dynamic tables.</p>
+  </div>
+</section>
+
+<!-- ===================== M13 ===================== -->
+<section id="m13">
+  <div class="eyebrow">SHARING AND PERFORMANCE</div>
+  <h2>13. Data Sharing &amp; Clustering</h2>
+  <p class="sub">Giving data away without copying it, and making huge tables fast.</p>
+
+  <h3>Secure data sharing</h3>
+  <p>A share is metadata, not data. The consumer queries your micro-partitions directly using their
+     own warehouse, so they pay the compute and you pay only your storage — once. There is no copy,
+     no ETL, and no staleness.</p>
+
+  <pre><span class="lbl">PROVIDER SIDE</span><span class="k">CREATE SHARE</span> sales_share;
+<span class="k">GRANT USAGE ON DATABASE</span> rpt_db <span class="k">TO SHARE</span> sales_share;
+<span class="k">GRANT USAGE ON SCHEMA</span> rpt_db.public <span class="k">TO SHARE</span> sales_share;
+<span class="k">GRANT SELECT ON VIEW</span> rpt_db.public.v_customer_sales <span class="k">TO SHARE</span> sales_share;
+<span class="k">ALTER SHARE</span> sales_share <span class="k">ADD ACCOUNTS</span> = (<span class="s">'CUSTOMER_ACCT'</span>);</pre>
+
+  <pre><span class="lbl">CONSUMER SIDE</span><span class="k">CREATE DATABASE</span> shared_sales <span class="k">FROM SHARE</span> provider_acct.sales_share;
+<span class="k">SELECT</span> * <span class="k">FROM</span> shared_sales.public.v_customer_sales;   <span class="c">-- read-only, always live</span></pre>
+
+  <div class="callout">
+    <strong>Two rules and one workaround</strong>
+    <p>Shares are read-only, and normally both accounts must be on the same cloud and region —
+       otherwise you set up replication first. If the customer has no Snowflake account, create a
+       <strong>reader account</strong>: you provision and pay for it, they just query.</p>
+  </div>
+
+  <h3>Clustering</h3>
+  <p>Snowflake orders data naturally as it loads. On very large tables that natural order stops
+     matching how people filter, pruning degrades, and queries scan too much. A clustering key tells
+     Snowflake to keep the table sorted on those columns in the background.</p>
+
+  <pre><span class="lbl">CHECK BEFORE YOU CLUSTER</span><span class="k">SELECT</span> SYSTEM$CLUSTERING_INFORMATION(<span class="s">'sales'</span>, <span class="s">'(sale_date, region)'</span>);
+<span class="c">-- look at average_overlaps and average_depth; lower is better</span>
+
+<span class="k">ALTER TABLE</span> sales <span class="k">CLUSTER BY</span> (sale_date, region);
+<span class="k">ALTER TABLE</span> sales <span class="k">DROP CLUSTERING KEY</span>;</pre>
+
+  <div class="callout warn">
+    <strong>Clustering is not free, and not always right</strong>
+    <p>Automatic reclustering consumes credits continuously. It pays off on tables in the multi-terabyte
+       range that are queried often on the same columns. On a table of a few gigabytes it usually
+       costs more than it saves. Choose low-to-medium cardinality columns that appear in WHERE and
+       JOIN clauses, order them from lowest to highest cardinality, and keep the key to three or four
+       columns.</p>
+  </div>
+
+  <p>Related: <strong>search optimisation service</strong> is the better choice for point lookups on
+     high-cardinality columns — <code>ALTER TABLE t ADD SEARCH OPTIMIZATION;</code> — while
+     clustering suits range scans.</p>
+</section>
+
+<!-- ===================== M14 ===================== -->
+<section id="m14">
+  <div class="eyebrow">REUSABLE CODE</div>
+  <h2>14. UDFs &amp; Stored Procedures</h2>
+  <p class="sub">Two kinds of reusable code, and a difference interviewers love to test.</p>
+
+  <table>
+    <tr><th style="width:30%"> </th><th>UDF</th><th>Stored procedure</th></tr>
+    <tr><td>Purpose</td><td>Return a value</td><td>Perform actions</td></tr>
+    <tr><td>Called as</td><td>Inside a SELECT</td><td><code>CALL sp_name()</code></td></tr>
+    <tr><td>Can run DML/DDL</td><td>No</td><td>Yes</td></tr>
+    <tr><td>Control flow</td><td>No</td><td>Yes — loops, IF, transactions, error handling</td></tr>
+    <tr><td>Languages</td><td>SQL, JavaScript, Python, Java, Scala</td><td>Same set</td></tr>
+  </table>
+
+  <pre><span class="lbl">SCALAR UDF, THEN A TABLE UDF</span><span class="k">CREATE FUNCTION</span> fn_gst(amount FLOAT, rate FLOAT)
+<span class="k">RETURNS</span> FLOAT
+<span class="k">AS</span> $$ amount * rate / 100 $$;
+
+<span class="k">SELECT</span> order_id, amount, fn_gst(amount, 18) <span class="k">AS</span> gst <span class="k">FROM</span> orders;
+
+<span class="c">-- UDTF: returns a table, used with LATERAL or FROM TABLE()</span>
+<span class="k">CREATE FUNCTION</span> fn_top_orders(cust NUMBER)
+<span class="k">RETURNS TABLE</span> (order_id NUMBER, amount NUMBER)
+<span class="k">AS</span> $$ <span class="k">SELECT</span> order_id, amount <span class="k">FROM</span> orders <span class="k">WHERE</span> cust_id = cust
+       <span class="k">ORDER BY</span> amount <span class="k">DESC LIMIT</span> 5 $$;
+
+<span class="k">SELECT</span> * <span class="k">FROM TABLE</span>(fn_top_orders(101));</pre>
+
+  <pre><span class="lbl">PYTHON UDF — WHEN SQL IS NOT ENOUGH</span><span class="k">CREATE FUNCTION</span> fn_clean_phone(p STRING)
+<span class="k">RETURNS</span> STRING
+LANGUAGE PYTHON RUNTIME_VERSION = <span class="s">'3.11'</span>
+HANDLER = <span class="s">'run'</span>
+<span class="k">AS</span> $$
+<span class="k">import</span> re
+<span class="k">def</span> run(p):
+    digits = re.sub(r<span class="s">'\D'</span>, <span class="s">''</span>, p <span class="k">or</span> <span class="s">''</span>)
+    <span class="k">return</span> digits[-10:] <span class="k">if</span> len(digits) &gt;= 10 <span class="k">else</span> <span class="k">None</span>
+$$;</pre>
+
+  <pre><span class="lbl">STORED PROCEDURE WITH ERROR HANDLING</span><span class="k">CREATE OR REPLACE PROCEDURE</span> sp_load_fact()
+<span class="k">RETURNS</span> STRING
+LANGUAGE SQL
+<span class="k">AS</span>
+$$
+<span class="k">DECLARE</span>
+  row_count INTEGER <span class="k">DEFAULT</span> 0;
+<span class="k">BEGIN</span>
+  <span class="k">MERGE INTO</span> cur.fact_sales t
+  <span class="k">USING</span> stg.sales_clean s <span class="k">ON</span> t.sale_id = s.sale_id
+  <span class="k">WHEN MATCHED THEN UPDATE SET</span> t.amount = s.amount
+  <span class="k">WHEN NOT MATCHED THEN INSERT</span> (sale_id, amount) <span class="k">VALUES</span> (s.sale_id, s.amount);
+
+  row_count := SQLROWCOUNT;
+  <span class="k">RETURN</span> <span class="s">'Loaded '</span> || row_count || <span class="s">' rows'</span>;
+<span class="k">EXCEPTION</span>
+  <span class="k">WHEN OTHER THEN</span>
+    <span class="k">INSERT INTO</span> util.error_log <span class="k">VALUES</span> (CURRENT_TIMESTAMP(), <span class="s">'sp_load_fact'</span>, SQLERRM);
+    <span class="k">RETURN</span> <span class="s">'FAILED: '</span> || SQLERRM;
+<span class="k">END</span>;
+$$;
+
+<span class="k">CALL</span> sp_load_fact();</pre>
+
+  <div class="callout">
+    <strong>Owner's rights versus caller's rights</strong>
+    <p>By default a procedure runs with the owner's privileges, so a caller can execute it without
+       having direct access to the underlying tables — useful for controlled operations. Add
+       <code>EXECUTE AS CALLER</code> when you want the caller's own permissions and role context to
+       apply instead. This distinction comes up in security questions.</p>
+  </div>
+</section>
+
+<!-- ===================== M15 ===================== -->
+<section id="m15">
+  <div class="eyebrow">TRANSFORMATION TOOL</div>
+  <h2>15. dbt — Setup &amp; Models</h2>
+  <p class="sub">The transformation tool that turns your SQL into a tested, documented, version-controlled project.</p>
+
+  <h3>What dbt actually does</h3>
+  <p>dbt does not move data. It sits on top of Snowflake and runs your SELECT statements as
+     <code>CREATE TABLE AS</code> or <code>CREATE VIEW AS</code>, in the right order, with tests and
+     documentation attached. You write SELECT; dbt handles the DDL, the dependency order and the
+     environments. It is the T in ELT.</p>
+
+  <div class="grid">
+    <div class="box"><h4>dbt Core</h4><p>Free, open source, runs from your terminal or from an orchestrator like Airflow.</p></div>
+    <div class="box"><h4>dbt Cloud</h4><p>Hosted UI, scheduler, IDE and logs. The free developer tier is enough for practice.</p></div>
+  </div>
+
+  <pre><span class="lbl">PROJECT STRUCTURE</span>my_project/
+├── dbt_project.yml        <span class="c"># project config: name, paths, model materialisations</span>
+├── profiles.yml           <span class="c"># connection details (keep OUT of git)</span>
+├── models/
+│   ├── staging/           <span class="c"># stg_ models: 1:1 with sources, light cleaning</span>
+│   ├── intermediate/      <span class="c"># int_ models: joins and reshaping</span>
+│   └── marts/             <span class="c"># dim_ / fct_ models: business-ready</span>
+├── snapshots/             <span class="c"># SCD2 history</span>
+├── tests/                 <span class="c"># custom tests</span>
+├── macros/                <span class="c"># reusable Jinja functions</span>
+├── seeds/                 <span class="c"># small CSVs loaded as tables</span>
+└── analyses/</pre>
+
+  <pre><span class="lbl">CONNECTING TO SNOWFLAKE — profiles.yml</span>my_project:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: ab12345.ap-south-1
+      user: dbt_user
+      password: "{{ env_var('DBT_PASSWORD') }}"   <span class="c"># never hardcode</span>
+      role: R_TRANSFORM
+      warehouse: WH_TRANSFORM
+      database: ANALYTICS
+      schema: dbt_rahul                            <span class="c"># your own dev schema</span>
+      threads: 4</pre>
+
+  <h3>Models and the ref() function</h3>
+  <p>A model is one SQL file producing one object. The magic is <code>ref()</code>: it points at
+     another model, and from those references dbt builds the dependency graph and decides the run
+     order for you. You never write the order by hand.</p>
+
+  <pre><span class="lbl">models/staging/stg_orders.sql</span>{{ config(materialized=<span class="s">'view'</span>) }}
+
+<span class="k">SELECT</span>
+    order_id::NUMBER            <span class="k">AS</span> order_id,
+    customer_id::NUMBER         <span class="k">AS</span> customer_id,
+    order_date::DATE            <span class="k">AS</span> order_date,
+    amount::NUMBER(12,2)        <span class="k">AS</span> amount
+<span class="k">FROM</span> {{ source(<span class="s">'raw'</span>, <span class="s">'orders'</span>) }}
+<span class="k">WHERE</span> order_id <span class="k">IS NOT NULL</span></pre>
+
+  <pre><span class="lbl">models/marts/fct_sales.sql</span>{{ config(materialized=<span class="s">'incremental'</span>, unique_key=<span class="s">'order_id'</span>) }}
+
+<span class="k">SELECT</span> o.order_id, o.order_date, c.region, o.amount
+<span class="k">FROM</span> {{ ref(<span class="s">'stg_orders'</span>) }} o
+<span class="k">JOIN</span> {{ ref(<span class="s">'dim_customer'</span>) }} c <span class="k">ON</span> o.customer_id = c.customer_id
+
+{% <span class="k">if</span> is_incremental() %}
+  <span class="c">-- only new rows on later runs</span>
+  <span class="k">WHERE</span> o.order_date &gt; (<span class="k">SELECT</span> MAX(order_date) <span class="k">FROM</span> {{ this }})
+{% endif %}</pre>
+
+  <figure class="fig">
+<svg viewBox="0 0 760 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="dbt lineage" font-family="Segoe UI">
+<rect x="16" y="30" width="140" height="52" rx="8" fill="#f5f7fa" stroke="#d6dde8"/>
+<text x="86" y="52" text-anchor="middle" font-size="12" font-weight="700" fill="#152238">source: orders</text>
+<text x="86" y="70" text-anchor="middle" font-size="11" fill="#4a5a75">RAW table</text>
+<rect x="16" y="118" width="140" height="52" rx="8" fill="#f5f7fa" stroke="#d6dde8"/>
+<text x="86" y="140" text-anchor="middle" font-size="12" font-weight="700" fill="#152238">source: customers</text>
+<text x="86" y="158" text-anchor="middle" font-size="11" fill="#4a5a75">RAW table</text>
+
+<line x1="156" y1="56" x2="216" y2="56" stroke="#8b98ad"/><line x1="156" y1="144" x2="216" y2="144" stroke="#8b98ad"/>
+
+<rect x="216" y="30" width="150" height="52" rx="8" fill="#eaf1fa" stroke="#1f5fa8"/>
+<text x="291" y="52" text-anchor="middle" font-size="12" font-weight="700" fill="#1f5fa8">stg_orders</text>
+<text x="291" y="70" text-anchor="middle" font-size="11" fill="#4a5a75">view</text>
+<rect x="216" y="118" width="150" height="52" rx="8" fill="#eaf1fa" stroke="#1f5fa8"/>
+<text x="291" y="140" text-anchor="middle" font-size="12" font-weight="700" fill="#1f5fa8">dim_customer</text>
+<text x="291" y="158" text-anchor="middle" font-size="11" fill="#4a5a75">table</text>
+
+<line x1="366" y1="56" x2="440" y2="90" stroke="#8b98ad"/><line x1="366" y1="144" x2="440" y2="104" stroke="#8b98ad"/>
+
+<rect x="440" y="70" width="160" height="58" rx="8" fill="#e9f5ef" stroke="#2f8f6b"/>
+<text x="520" y="94" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1d6b4f">fct_sales</text>
+<text x="520" y="113" text-anchor="middle" font-size="11" fill="#4a5a75">incremental</text>
+
+<line x1="600" y1="99" x2="648" y2="99" stroke="#8b98ad"/>
+<rect x="648" y="70" width="96" height="58" rx="8" fill="#fdf4e3" stroke="#c98a1e"/>
+<text x="696" y="94" text-anchor="middle" font-size="12" font-weight="700" fill="#8a5a12">exposure</text>
+<text x="696" y="112" text-anchor="middle" font-size="11" fill="#4a5a75">dashboard</text>
+
+<text x="380" y="200" text-anchor="middle" font-size="12.5" fill="#4a5a75">every arrow comes from a ref() or source() call — dbt derives the run order from this graph, you never write it</text>
+</svg>
+<figcaption>ref() builds this graph. From the graph dbt gets run order, parallelism, and selective rebuilds.</figcaption>
+<span class="wm">AiTechs_LVR</span>
+</figure>
+
+  <h3>The four materialisations</h3>
+  <table>
+    <tr><th style="width:20%">Type</th><th>What dbt creates</th><th>Use when</th></tr>
+    <tr><td><strong>view</strong></td><td>A view, rebuilt logic each query</td><td>Staging models, light logic</td></tr>
+    <tr><td><strong>table</strong></td><td>Dropped and rebuilt fully each run</td><td>Marts that are small or need full refresh</td></tr>
+    <tr><td><strong>incremental</strong></td><td>Built once, then only new rows merged</td><td>Large fact tables</td></tr>
+    <tr><td><strong>ephemeral</strong></td><td>Nothing — inlined as a CTE into dependants</td><td>Small intermediate logic you do not want to persist</td></tr>
+  </table>
+
+  <pre><span class="lbl">THE COMMANDS YOU USE DAILY</span>dbt debug                       <span class="c"># check the connection first</span>
+dbt run                         <span class="c"># build all models</span>
+dbt run --select stg_orders+    <span class="c"># this model and everything downstream</span>
+dbt run --select +fct_sales     <span class="c"># this model and everything it depends on</span>
+dbt run --full-refresh          <span class="c"># rebuild incrementals from scratch</span>
+dbt test                        <span class="c"># run tests</span>
+dbt build                       <span class="c"># run + test + snapshot + seed, in dependency order</span>
+dbt docs generate &amp;&amp; dbt docs serve</pre>
+
+  <div class="callout">
+    <strong>Why ref() is the whole point</strong>
+    <p>Because dbt knows the graph, it can run models in the correct order in parallel, rebuild only
+       what a change affects, and swap schemas between dev and prod without you editing a single
+       query. Hardcode a table name instead of using ref() and you lose all three.</p>
+  </div>
+</section>
+
+<!-- ===================== M16 ===================== -->
+<section id="m16">
+  <div class="eyebrow">HISTORY AND TRUST</div>
+  <h2>16. dbt Snapshots &amp; Tests</h2>
+  <p class="sub">History tracking, and the safety net that makes a pipeline trustworthy.</p>
+
+  <h3>Snapshots — SCD Type 2, handled for you</h3>
+  <p>Source systems overwrite. A snapshot captures the row before it changed, so you keep history
+     with valid-from and valid-to columns. This is the same passport idea from dimension modelling,
+     written in about ten lines.</p>
+
+  <pre><span class="lbl">snapshots/snap_customer.sql</span>{% snapshot snap_customer %}
+{{ config(
+     target_schema=<span class="s">'snapshots'</span>,
+     unique_key=<span class="s">'customer_id'</span>,
+     strategy=<span class="s">'check'</span>,
+     check_cols=[<span class="s">'name'</span>, <span class="s">'city'</span>, <span class="s">'segment'</span>]
+) }}
+
+<span class="k">SELECT</span> * <span class="k">FROM</span> {{ source(<span class="s">'raw'</span>, <span class="s">'customers'</span>) }}
+{% endsnapshot %}</pre>
+
+  <table>
+    <tr><th style="width:22%">Strategy</th><th>How it detects change</th><th>Use when</th></tr>
+    <tr><td><strong>timestamp</strong></td><td>Compares an updated_at column</td><td>The source has a reliable modified timestamp — cheaper and preferred</td></tr>
+    <tr><td><strong>check</strong></td><td>Compares the listed columns value by value</td><td>No reliable timestamp exists</td></tr>
+  </table>
+
+  <p>dbt adds <code>dbt_valid_from</code>, <code>dbt_valid_to</code>, <code>dbt_scd_id</code> and
+     <code>dbt_updated_at</code>. Current rows carry a NULL <code>dbt_valid_to</code>.</p>
+
+  <div class="callout warn">
+    <strong>Snapshots only see what is there when they run</strong>
+    <p>If a value changes twice between two snapshot runs, the middle state is lost forever. Snapshot
+       frequency is therefore a business decision, not a technical one — ask how much history the
+       business actually needs before setting the schedule.</p>
+  </div>
+
+  <h3>Tests</h3>
+  <p>Two kinds. Generic tests are declared in YAML and reused everywhere; singular tests are SQL
+     files that return failing rows. A test passes when it returns zero rows.</p>
+
+  <pre><span class="lbl">models/marts/schema.yml — GENERIC TESTS</span>version: 2
+models:
+  - name: fct_sales
+    description: One row per order, joined to customer region.
+    columns:
+      - name: order_id
+        description: Primary key from the source system.
+        tests:
+          - unique
+          - not_null
+      - name: region
+        tests:
+          - accepted_values:
+              values: [<span class="s">'North'</span>, <span class="s">'South'</span>, <span class="s">'East'</span>, <span class="s">'West'</span>]
+      - name: customer_id
+        tests:
+          - relationships:
+              to: ref(<span class="s">'dim_customer'</span>)
+              field: customer_id</pre>
+
+  <pre><span class="lbl">tests/assert_no_negative_amounts.sql — SINGULAR TEST</span><span class="c">-- passes only if this returns nothing</span>
+<span class="k">SELECT</span> order_id, amount
+<span class="k">FROM</span> {{ ref(<span class="s">'fct_sales'</span>) }}
+<span class="k">WHERE</span> amount &lt; 0</pre>
+
+  <p>The four built-in generic tests — <code>unique</code>, <code>not_null</code>,
+     <code>accepted_values</code>, <code>relationships</code> — cover most real problems. Add
+     <code>dbt-utils</code> for things like <code>equal_rowcount</code> and
+     <code>expression_is_true</code>. Set <code>severity: warn</code> when a failure should be
+     visible but not stop the pipeline.</p>
+
+  <div class="callout hook">
+    <strong>Why this is your best dbt talking point</strong>
+    <p>Tests are how a pipeline earns trust. Say that you test primary keys for uniqueness and
+       nullness on every model, referential integrity between facts and dimensions, and business
+       rules as singular tests — and that <code>dbt build</code> stops downstream models when a test
+       fails, so bad data never reaches a dashboard.</p>
+  </div>
+</section>
+
+<!-- ===================== M17 ===================== -->
+<section id="m17">
+  <div class="eyebrow">PROJECT HYGIENE</div>
+  <h2>17. dbt Macros, Hooks, Seeds &amp; Exposures</h2>
+  <p class="sub">The pieces that make a dbt project maintainable rather than just working.</p>
+
+  <h3>Macros</h3>
+  <p>A macro is a reusable piece of Jinja and SQL — a function for your SQL. If the same CASE
+     statement appears in five models, it belongs in a macro.</p>
+
+  <pre><span class="lbl">macros/cents_to_rupees.sql</span>{% macro cents_to_rupees(column_name, precision=2) %}
+    ROUND({{ column_name }} / 100.0, {{ precision }})
+{% endmacro %}
+
+<span class="c">-- used in any model:</span>
+<span class="k">SELECT</span> order_id, {{ cents_to_rupees(<span class="s">'amount_cents'</span>) }} <span class="k">AS</span> amount <span class="k">FROM</span> ...</pre>
+
+  <pre><span class="lbl">A MACRO THAT GENERATES SQL — THE REAL POWER</span>{% macro pivot_regions(regions) %}
+  {% for r in regions %}
+    SUM(<span class="k">CASE WHEN</span> region = <span class="s">'{{ r }}'</span> <span class="k">THEN</span> amount <span class="k">END</span>) <span class="k">AS</span> {{ r | lower }}_amount
+    {% if not loop.last %},{% endif %}
+  {% endfor %}
+{% endmacro %}</pre>
+
+  <p>You can also run a macro directly with <code>dbt run-operation macro_name --args '{...}'</code>,
+     which is how people do one-off admin tasks like granting permissions.</p>
+
+  <h3>Hooks</h3>
+  <p>SQL that runs around your models — for grants, audit logging or session settings.</p>
+  <table>
+    <tr><th style="width:26%">Hook</th><th>Runs</th></tr>
+    <tr><td><code>pre-hook</code></td><td>Before an individual model</td></tr>
+    <tr><td><code>post-hook</code></td><td>After an individual model</td></tr>
+    <tr><td><code>on-run-start</code></td><td>Once, before the whole run</td></tr>
+    <tr><td><code>on-run-end</code></td><td>Once, after the whole run</td></tr>
+  </table>
+
+  <pre><span class="lbl">dbt_project.yml</span>models:
+  my_project:
+    marts:
+      +post-hook: <span class="s">"GRANT SELECT ON {{ this }} TO ROLE R_ANALYST"</span>
+
+on-run-end:
+  - <span class="s">"INSERT INTO util.run_log VALUES (CURRENT_TIMESTAMP(), '{{ invocation_id }}')"</span></pre>
+
+  <h3>Seeds</h3>
+  <p>Small CSV files in <code>seeds/</code>, loaded as tables by <code>dbt seed</code>. Use them for
+     reference data that belongs in version control — country codes, region mappings, a decode table
+     for the 88-level values from a legacy system. Never for real volume data.</p>
+
+  <pre><span class="lbl">seeds/region_mapping.csv, then referenced like a model</span>region_code,region_name,zone
+N,North,Delhi
+S,South,Bengaluru
+
+<span class="k">SELECT</span> * <span class="k">FROM</span> {{ ref(<span class="s">'region_mapping'</span>) }}</pre>
+
+  <h3>Exposures</h3>
+  <p>An exposure declares a downstream consumer — a dashboard, an application, an ML model — so it
+     appears in your lineage graph and documentation. Now the graph shows the full path from source
+     table to the Power BI report a director actually looks at.</p>
+
+  <pre><span class="lbl">models/exposures.yml</span>version: 2
+exposures:
+  - name: sales_executive_dashboard
+    type: dashboard
+    maturity: high
+    url: https://powerbi.company.com/sales
+    owner:
+      name: Rahul
+      email: rahul@company.com
+    depends_on:
+      - ref(<span class="s">'fct_sales'</span>)
+      - ref(<span class="s">'dim_customer'</span>)</pre>
+
+  <div class="callout">
+    <strong>The practical value</strong>
+    <p>Before changing a model you run <code>dbt ls --select fct_sales+</code> and immediately see
+       that the executive dashboard depends on it. That is impact analysis without a meeting.</p>
+  </div>
+</section>
+
+<!-- ===================== M18 ===================== -->
+<section id="m18">
+  <div class="eyebrow">INGESTION TOOLS</div>
+  <h2>18. Azure Data Factory &amp; AWS Integration</h2>
+  <p class="sub">Getting data from source systems into cloud storage, which is where Snowflake picks it up.</p>
+
+  <h3>Where these tools sit</h3>
+  <div class="flow">
+    <span class="step">Source DB / SaaS / files</span><span class="ar">→</span>
+    <span class="step">ADF or Glue (EL)</span><span class="ar">→</span>
+    <span class="step">S3 / Blob</span><span class="ar">→</span>
+    <span class="step">Snowflake (T)</span>
+  </div>
+  <p>ADF and AWS Glue handle extract and load. Transformation belongs inside Snowflake, using SQL or
+     dbt, because that is where the compute is cheap and elastic. Doing heavy transformation in ADF
+     data flows is a common but expensive design mistake.</p>
+
+  <h3>ADF building blocks</h3>
+  <table>
+    <tr><th style="width:24%">Component</th><th>What it is</th></tr>
+    <tr><td><strong>Linked service</strong></td><td>A connection — to SQL Server, Blob storage, Snowflake. Credentials should come from Key Vault.</td></tr>
+    <tr><td><strong>Dataset</strong></td><td>A pointer to the actual data: a table, a folder, a file pattern.</td></tr>
+    <tr><td><strong>Activity</strong></td><td>One unit of work: Copy, Lookup, ForEach, Stored Procedure, Data Flow.</td></tr>
+    <tr><td><strong>Pipeline</strong></td><td>Activities wired together with dependencies and error paths.</td></tr>
+    <tr><td><strong>Trigger</strong></td><td>Schedule, tumbling window, or storage event.</td></tr>
+    <tr><td><strong>Integration runtime</strong></td><td>The compute. Self-hosted IR is what reaches on-premises SQL Server.</td></tr>
+  </table>
+
+  <h3>The metadata-driven pattern worth describing</h3>
+  <ol class="steps">
+    <li>A control table lists every source table with its watermark column and last-loaded value.</li>
+    <li>A Lookup activity reads that control table.</li>
+    <li>A ForEach activity loops over the rows, running a Copy activity per table with parameters.</li>
+    <li>Copy pulls rows greater than the watermark and writes Parquet to Blob or S3, partitioned by date.</li>
+    <li>A Stored Procedure activity updates the watermark only after a successful copy.</li>
+    <li>Snowpipe or a COPY task picks the files up from there.</li>
+  </ol>
+
+  <div class="callout">
+    <strong>Why this pattern impresses</strong>
+    <p>One pipeline handles two hundred tables. Adding a table means inserting a row in the control
+       table — no new pipeline, no redeployment. Say this instead of "I built a copy activity" and
+       the conversation changes level.</p>
+  </div>
+
+  <h3>AWS side</h3>
+  <ul class="tight">
+    <li><strong>S3</strong> — the landing zone. Organise as <code>s3://bucket/system/table/yyyymmdd/</code>.</li>
+    <li><strong>IAM role and trust policy</strong> — what a Snowflake storage integration assumes. No keys anywhere.</li>
+    <li><strong>SQS notification</strong> — what makes Snowpipe auto-ingest fire on file arrival.</li>
+    <li><strong>Lambda / Glue</strong> — event-driven conversion and cleanup jobs before loading.</li>
+    <li><strong>Secrets Manager</strong> — where credentials live if a job needs them.</li>
+  </ul>
+
+  <pre><span class="lbl">THE INTEGRATION HANDSHAKE, IN ORDER</span>1. <span class="k">CREATE STORAGE INTEGRATION</span> in Snowflake with the intended role ARN
+2. <span class="k">DESC INTEGRATION</span> S3_INT;   <span class="c">-- read STORAGE_AWS_IAM_USER_ARN and EXTERNAL_ID</span>
+3. Paste those two values into the AWS role's trust policy
+4. <span class="k">CREATE STAGE</span> using the integration, then <span class="k">LIST</span> @stage to prove it works
+<span class="c">-- people fail this because they skip step 2 and 3 — the trust must go both ways</span></pre>
+</section>
+
+<!-- ===================== MEDALLION ===================== -->
+<section id="mmed">
+  <div class="eyebrow">DESIGN PATTERN</div>
+  <h2>19. Medallion Architecture</h2>
+  <p class="sub">The layered design almost every Snowflake project uses. Bronze, Silver, Gold.</p>
+
+  <p>Medallion architecture is a way of organising a data platform into layers, where data gets
+     cleaner and more business-ready as it moves through each one. Nothing is deleted along the way,
+     so you can always go back and rebuild a later layer from an earlier one. The name comes from
+     medal metals: bronze is raw, silver is refined, gold is the finished product.</p>
+
+  <div class="flow">
+    <span class="step">Source</span><span class="ar">→</span>
+    <span class="step">Bronze / RAW</span><span class="ar">→</span>
+    <span class="step">Silver / STAGING</span><span class="ar">→</span>
+    <span class="step">Gold / CURATED</span><span class="ar">→</span>
+    <span class="step">Reports</span>
+  </div>
+
+  <figure class="fig">
+<svg viewBox="0 0 760 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Medallion layers" font-family="Segoe UI">
+<rect x="16" y="30" width="228" height="110" rx="10" fill="#f6efe4" stroke="#a97c3f"/>
+<text x="130" y="58" text-anchor="middle" font-size="14" font-weight="700" fill="#7d5a2a">BRONZE — RAW</text>
+<text x="130" y="82" text-anchor="middle" font-size="12" fill="#4a5a75">exactly as it arrived</text>
+<text x="130" y="102" text-anchor="middle" font-size="12" fill="#4a5a75">never edited · VARIANT kept</text>
+<text x="130" y="122" text-anchor="middle" font-size="12" font-style="italic" fill="#7d5a2a">the muddy sack</text>
+<text x="256" y="90" font-size="18" fill="#8b98ad">→</text>
+
+<rect x="282" y="30" width="196" height="110" rx="10" fill="#f0f2f6" stroke="#8b98ad"/>
+<text x="380" y="58" text-anchor="middle" font-size="14" font-weight="700" fill="#54617a">SILVER — STAGING</text>
+<text x="380" y="82" text-anchor="middle" font-size="12" fill="#4a5a75">typed · deduplicated</text>
+<text x="380" y="102" text-anchor="middle" font-size="12" fill="#4a5a75">transient tables</text>
+<text x="380" y="122" text-anchor="middle" font-size="12" font-style="italic" fill="#54617a">washed and chopped</text>
+<text x="490" y="90" font-size="18" fill="#8b98ad">→</text>
+
+<rect x="516" y="30" width="228" height="110" rx="10" fill="#fbf3d8" stroke="#c9a227"/>
+<text x="630" y="58" text-anchor="middle" font-size="14" font-weight="700" fill="#8a6d12">GOLD — CURATED</text>
+<text x="630" y="82" text-anchor="middle" font-size="12" fill="#4a5a75">facts · SCD2 dimensions</text>
+<text x="630" y="102" text-anchor="middle" font-size="12" fill="#4a5a75">what dashboards read</text>
+<text x="630" y="122" text-anchor="middle" font-size="12" font-style="italic" fill="#8a6d12">the dish on the table</text>
+
+<path d="M130 148 L130 172 L630 172 L630 148" fill="none" stroke="#1f5fa8" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="380" y="192" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1f5fa8">a bug in silver is fixed by rebuilding from bronze — the source is never touched again</text>
+<rect x="16" y="204" width="728" height="38" rx="9" fill="#eaf1fa" stroke="#1f5fa8"/>
+<text x="380" y="228" text-anchor="middle" font-size="12.5" fill="#152238">each layer reads only from the one before it · gold never reads bronze directly</text>
+</svg>
+<figcaption>Bronze keeps the truth, silver makes it usable, gold makes it meaningful. Nothing skips a layer.</figcaption>
+<span class="wm">AiTechs_LVR</span>
+</figure>
+
+  <h3>What each layer is for</h3>
+  <table>
+    <tr><th style="width:16%">Layer</th><th style="width:30%">What it holds</th><th>Rules that define it</th></tr>
+    <tr>
+      <td><strong>Bronze<br>(RAW)</strong></td>
+      <td>Data exactly as it arrived — every column, every row, including bad ones.</td>
+      <td>Never edit it. No business logic. Keep the source file name and load timestamp for lineage.
+          Semi-structured data stays in VARIANT here. This layer is your ability to replay history.</td>
+    </tr>
+    <tr>
+      <td><strong>Silver<br>(STAGING)</strong></td>
+      <td>Cleaned, typed, deduplicated data. One row per real-world event or entity.</td>
+      <td>Cast data types, trim and standardise text, handle nulls, deduplicate, route rejects to an
+          error table, apply light conformance across sources. Still close to source shape — not yet
+          modelled for the business.</td>
+    </tr>
+    <tr>
+      <td><strong>Gold<br>(CURATED / MART)</strong></td>
+      <td>Business-ready facts and dimensions, aggregates, KPIs.</td>
+      <td>Star schema, SCD2 dimensions, joins across sources, business rules applied, named the way
+          the business speaks. This is what dashboards and shares point at.</td>
+    </tr>
+  </table>
+
+  <div class="callout">
+    <strong>The one rule that makes the whole pattern work</strong>
+    <p>Each layer reads only from the layer directly above it. A gold table never reads bronze
+       directly. That single discipline is what lets you fix a cleaning bug in silver and rebuild
+       gold, without touching ingestion or going back to the source system.</p>
+  </div>
+
+  <h3>Building it in Snowflake</h3>
+  <pre><span class="lbl">DATABASES, SCHEMAS AND THE RIGHT TABLE TYPE PER LAYER</span><span class="k">CREATE DATABASE</span> RAW_DB;    <span class="c">-- bronze: permanent, keeps history, cheap to replay from</span>
+<span class="k">CREATE DATABASE</span> STG_DB;    <span class="c">-- silver: transient tables, no fail-safe cost, fully rebuildable</span>
+<span class="k">CREATE DATABASE</span> CUR_DB;    <span class="c">-- gold: permanent, longer Time Travel, this is the asset</span>
+<span class="k">CREATE DATABASE</span> RPT_DB;    <span class="c">-- secure views and shares for consumers</span>
+
+<span class="c">-- bronze keeps lineage columns</span>
+<span class="k">CREATE TABLE</span> RAW_DB.SALES.ORDERS_RAW (
+  payload      VARIANT,
+  src_file     STRING <span class="k">DEFAULT</span> METADATA$FILENAME,
+  load_ts      TIMESTAMP_NTZ <span class="k">DEFAULT</span> CURRENT_TIMESTAMP()
+);
+
+<span class="c">-- silver is transient: it can always be rebuilt from bronze</span>
+<span class="k">CREATE TRANSIENT TABLE</span> STG_DB.SALES.ORDERS_CLEAN (
+  order_id NUMBER, cust_id NUMBER, order_date DATE, amount NUMBER(12,2)
+);
+
+<span class="c">-- gold gets the protection</span>
+<span class="k">ALTER TABLE</span> CUR_DB.SALES.FACT_SALES <span class="k">SET</span> DATA_RETENTION_TIME_IN_DAYS = 7;</pre>
+
+  <pre><span class="lbl">MOVING BETWEEN LAYERS WITH STREAMS AND TASKS</span><span class="c">-- bronze → silver: dedupe and type on the way</span>
+<span class="k">CREATE STREAM</span> str_orders <span class="k">ON TABLE</span> RAW_DB.SALES.ORDERS_RAW;
+
+<span class="k">CREATE TASK</span> t1_silver WAREHOUSE=wh_transform
+  SCHEDULE=<span class="s">'15 MINUTE'</span>
+  <span class="k">WHEN</span> SYSTEM$STREAM_HAS_DATA(<span class="s">'str_orders'</span>)
+<span class="k">AS</span>
+  <span class="k">INSERT INTO</span> STG_DB.SALES.ORDERS_CLEAN
+  <span class="k">SELECT</span> payload:order_id::NUMBER, payload:cust_id::NUMBER,
+         payload:order_date::DATE, payload:amount::NUMBER(12,2)
+  <span class="k">FROM</span> str_orders
+  <span class="k">WHERE</span> METADATA$ACTION = <span class="s">'INSERT'</span>
+  <span class="k">QUALIFY</span> ROW_NUMBER() <span class="k">OVER</span> (<span class="k">PARTITION BY</span> payload:order_id <span class="k">ORDER BY</span> load_ts <span class="k">DESC</span>) = 1;
+
+<span class="c">-- silver → gold: business modelling</span>
+<span class="k">CREATE TASK</span> t2_gold WAREHOUSE=wh_transform <span class="k">AFTER</span> t1_silver
+<span class="k">AS CALL</span> CUR_DB.SALES.SP_LOAD_FACT_SALES();</pre>
+
+  <h3>The same pattern in dbt</h3>
+  <p>dbt's recommended folder structure is medallion by another name, which is why the two are almost
+     always taught together.</p>
+  <table>
+    <tr><th style="width:26%">Medallion layer</th><th>dbt folder</th><th>Typical materialisation</th></tr>
+    <tr><td>Bronze</td><td>Sources, declared in <code>sources.yml</code></td><td>Loaded by Snowpipe or COPY, not by dbt</td></tr>
+    <tr><td>Silver</td><td><code>models/staging/</code> then <code>models/intermediate/</code></td><td>view, or ephemeral for intermediates</td></tr>
+    <tr><td>Gold</td><td><code>models/marts/</code></td><td>table or incremental</td></tr>
+  </table>
+
+  <div class="callout hook">
+    <strong>Picture for the three layers</strong>
+    <p>Vegetables from the market. Bronze is the sack as it came, mud still on it — you keep it
+       because you may need to check what you were sold. Silver is washed and chopped. Gold is the
+       dish on the table, ready to serve. You never cook straight from the muddy sack, and you never
+       throw the sack away until the meal is served.</p>
+  </div>
+
+  <h3>Why interviewers like this question</h3>
+  <ul class="tight">
+    <li><strong>Replayability.</strong> Keeping bronze untouched means any downstream bug is fixable
+        without re-extracting from the source — which often is not even possible.</li>
+    <li><strong>Cost control.</strong> Silver as transient tables removes fail-safe storage on data
+        that is fully rebuildable.</li>
+    <li><strong>Blast radius.</strong> A bad transformation damages one layer, not the platform.</li>
+    <li><strong>Clear ownership.</strong> Ingestion owns bronze, data engineers own silver, analytics
+        engineers own gold. The boundaries are also team boundaries.</li>
+    <li><strong>Security.</strong> Masking and row access policies belong in gold and the reporting
+        views, where business users actually read data.</li>
+  </ul>
+
+  <div class="callout warn">
+    <strong>Where teams get it wrong</strong>
+    <p>Putting business logic in bronze, which destroys replayability. Letting reports read silver
+       directly, so definitions drift. Creating so many sub-layers that nobody can trace a number.
+       And making silver permanent with long retention, quietly paying fail-safe on data that could
+       be rebuilt in ten minutes.</p>
+  </div>
+
+  <div class="callout">
+    <strong>If someone calls it something else</strong>
+    <p>You will hear the same idea named multi-hop architecture, or simply raw–staging–curated.
+       Lakehouse writing tends to use bronze, silver and gold; classic warehousing says landing,
+       staging and presentation. If a job description uses one vocabulary, use theirs — the design
+       underneath is identical.</p>
+  </div>
+</section>
+
+<!-- ===================== M19 ===================== -->
+<section id="m19">
+  <div class="eyebrow">PUTTING IT TOGETHER</div>
+  <h2>20. Sample Projects</h2>
+  <p class="sub">How the pieces assemble into something you can describe as your own work.</p>
+
+  <h3>Project A — AWS to Snowflake batch pipeline</h3>
+  <div class="flow">
+    <span class="step">S3 landing</span><span class="ar">→</span>
+    <span class="step">Snowpipe</span><span class="ar">→</span>
+    <span class="step">RAW</span><span class="ar">→</span>
+    <span class="step">Stream + Task</span><span class="ar">→</span>
+    <span class="step">STAGING</span><span class="ar">→</span>
+    <span class="step">CURATED</span><span class="ar">→</span>
+    <span class="step">Dashboard</span>
+  </div>
+  <ol class="steps">
+    <li>Storage integration and external stage over the S3 bucket, using an IAM role.</li>
+    <li>File format defined once, reused by every pipe.</li>
+    <li>A pipe per source table, auto-ingest wired to SQS notifications.</li>
+    <li>RAW tables keep the file name and load timestamp for lineage.</li>
+    <li>Streams on RAW; a task DAG merges into staging, then builds SCD2 dimensions and fact tables.</li>
+    <li>A final data-quality task compares counts and sums against a control table and emails on failure.</li>
+    <li>Secure views expose only approved columns; masking hides PII; a share or Power BI serves the customer.</li>
+  </ol>
+
+  <h3>Project B — ADF plus dbt on Snowflake</h3>
+  <ol class="steps">
+    <li>ADF metadata-driven pipeline extracts incrementally from SQL Server into Blob as Parquet.</li>
+    <li>A COPY task loads Blob into RAW on a schedule.</li>
+    <li>dbt takes over: staging models clean and type the data, intermediate models join, marts build
+        facts and dimensions.</li>
+    <li>Snapshots capture SCD2 history for customer and product.</li>
+    <li>Tests on every model — unique, not null, accepted values, relationships — with
+        <code>dbt build</code> so failures stop downstream work.</li>
+    <li>Exposures link the marts to the dashboards that consume them.</li>
+    <li>Everything in GitHub; a scheduler or dbt Cloud job runs it; docs published for the team.</li>
+  </ol>
+
+  <h3>How to present either project in an interview</h3>
+  <ol class="steps">
+    <li><strong>Context in two sentences.</strong> What business problem, what data, what volume.</li>
+    <li><strong>Your role.</strong> Be specific — which layers and which models you built.</li>
+    <li><strong>One design decision you can defend.</strong> Snowpipe over scheduled COPY. Transient
+        staging tables. Incremental fact model with a unique key. Any one, with the reason.</li>
+    <li><strong>One problem you solved.</strong> A duplicate-loading bug, a stream going stale, a
+        clustering key that did not pay off. Include how you detected it.</li>
+    <li><strong>A number.</strong> Runtime before and after, rows per day, credits saved, tests
+        passing. One real number outweighs three adjectives.</li>
+  </ol>
+
+  <div class="callout warn">
+    <strong>Only claim what you can walk through</strong>
+    <p>If you say you built it, expect to be asked to write the MERGE, explain why the task was
+       suspended, or describe what happens when a file is loaded twice. Practise those three answers
+       for whichever project you choose to lead with.</p>
+  </div>
+</section>
+
+<!-- ===================== M20 ===================== -->
+<section id="m20">
+  <div class="eyebrow">AI INSIDE SNOWFLAKE</div>
+  <h2>21. Cortex AI</h2>
+  <p class="sub">Snowflake's built-in AI layer — LLMs and ML called as SQL functions.</p>
+
+  <p>Cortex runs models inside Snowflake's own security boundary. No API keys, no GPU setup, no data
+     leaving the platform. You call AI the way you call <code>SUM()</code>, and billing is per
+     token for the LLM functions or normal compute for the ML functions.</p>
+
+  <table>
+    <tr><th style="width:28%">Component</th><th>What it does</th></tr>
+    <tr><td><strong>LLM functions</strong></td><td><code>COMPLETE</code>, <code>SUMMARIZE</code>, <code>TRANSLATE</code>, <code>SENTIMENT</code>, <code>CLASSIFY_TEXT</code>, <code>EXTRACT_ANSWER</code>, <code>EMBED_TEXT</code></td></tr>
+    <tr><td><strong>Cortex Analyst</strong></td><td>Plain-English questions turned into SQL, guided by a semantic model you define</td></tr>
+    <tr><td><strong>Cortex Search</strong></td><td>Hybrid vector and keyword search service — the retrieval half of a RAG chatbot</td></tr>
+    <tr><td><strong>ML functions</strong></td><td><code>FORECAST</code>, <code>ANOMALY_DETECTION</code>, <code>CLASSIFICATION</code></td></tr>
+    <tr><td><strong>Document AI</strong></td><td>Extracts structured fields from PDFs and scans</td></tr>
+  </table>
+
+  <pre><span class="lbl">LLM FUNCTIONS IN PLAIN SQL</span><span class="k">SELECT</span> SNOWFLAKE.CORTEX.SENTIMENT(review_text) <span class="k">AS</span> score <span class="k">FROM</span> reviews;
+
+<span class="k">SELECT</span> SNOWFLAKE.CORTEX.SUMMARIZE(ticket_body) <span class="k">FROM</span> support_tickets;
+
+<span class="k">SELECT</span> SNOWFLAKE.CORTEX.CLASSIFY_TEXT(
+         complaint_text, [<span class="s">'billing'</span>, <span class="s">'delivery'</span>, <span class="s">'quality'</span>, <span class="s">'other'</span>]) <span class="k">FROM</span> complaints;
+
+<span class="k">SELECT</span> SNOWFLAKE.CORTEX.COMPLETE(<span class="s">'mistral-large'</span>,
+         <span class="s">'Summarise this in three bullet points: '</span> || doc_text) <span class="k">FROM</span> docs;</pre>
+
+  <pre><span class="lbl">ML FUNCTIONS — NO PYTHON NEEDED</span><span class="k">CREATE</span> SNOWFLAKE.ML.FORECAST sales_forecast(
+  INPUT_DATA        =&gt; SYSTEM$REFERENCE(<span class="s">'VIEW'</span>, <span class="s">'monthly_sales'</span>),
+  TIMESTAMP_COLNAME =&gt; <span class="s">'sale_month'</span>,
+  TARGET_COLNAME    =&gt; <span class="s">'total_amount'</span>);
+
+<span class="k">CALL</span> sales_forecast!FORECAST(FORECASTING_PERIODS =&gt; 3);
+
+<span class="k">CREATE</span> SNOWFLAKE.ML.ANOMALY_DETECTION load_watch(
+  INPUT_DATA        =&gt; SYSTEM$REFERENCE(<span class="s">'VIEW'</span>, <span class="s">'daily_load_metrics'</span>),
+  TIMESTAMP_COLNAME =&gt; <span class="s">'load_date'</span>,
+  TARGET_COLNAME    =&gt; <span class="s">'row_count'</span>);</pre>
+
+  <div class="callout">
+    <strong>Where Cortex genuinely earns its place in a pipeline</strong>
+    <p>Anomaly detection on daily load metrics catches problems no hand-written threshold anticipated.
+       Forecast turns a report from what happened into what is coming. Sentiment and classification
+       enrich text columns that were previously dead weight. Analyst gives business users answers
+       without a report ticket.</p>
+  </div>
+
+  <div class="callout warn">
+    <strong>Say the costs too</strong>
+    <p>LLM functions bill per token, so they belong on metadata and text columns, not inside a
+       per-row transformation over millions of rows. Output needs human review. Model availability
+       varies by region. Grant the <code>SNOWFLAKE.CORTEX_USER</code> role deliberately and put a
+       resource monitor on the warehouse that runs it.</p>
+  </div>
+</section>
+
+<!-- ===================== M21 ===================== -->
+<section id="m21">
+  <div class="eyebrow">REVISION</div>
+  <h2>22. Quick Revision</h2>
+  <p class="sub">Read this the morning of an interview. Analogies survive nerves; definitions do not.</p>
+
+  <h3>Memory hooks</h3>
+  <table>
+    <tr><th style="width:28%">Concept</th><th>Hook</th></tr>
+    <tr><td>Three-layer architecture</td><td>Brain (services), muscle (warehouses), godown (storage)</td></tr>
+    <tr><td>Micro-partition pruning</td><td>Library shelves labelled "Ka to Ku" — walk past the rest</td></tr>
+    <tr><td>Scale up vs scale out</td><td>Bigger engine vs more autos on the road</td></tr>
+    <tr><td>Result cache</td><td>Same question within 24 hours, answer free</td></tr>
+    <tr><td>Resource monitor</td><td>Prepaid pack: alert at 75%, cut at 100%</td></tr>
+    <tr><td>Time Travel</td><td>CCTV rewind</td></tr>
+    <tr><td>Zero copy clone</td><td>A free Xerox that takes one second</td></tr>
+    <tr><td>Fail-safe</td><td>Seven days where only Snowflake support can help</td></tr>
+    <tr><td>FLATTEN</td><td>Opening a lunchbox and laying each item out separately</td></tr>
+    <tr><td>Stage</td><td>Reception desk holding couriers before delivery</td></tr>
+    <tr><td>Snowpipe</td><td>Automatic door</td></tr>
+    <tr><td>Stream</td><td>WhatsApp unread badge</td></tr>
+    <tr><td>Task DAG</td><td>Relay race</td></tr>
+    <tr><td>Masking policy</td><td>Aadhaar showing XXXX-1234</td></tr>
+    <tr><td>Row access policy</td><td>Guard who passes only your department's files</td></tr>
+    <tr><td>Data sharing</td><td>Drive share link, not emailed copies</td></tr>
+    <tr><td>Clustering key</td><td>Sorting a phone directory by surname</td></tr>
+    <tr><td>dbt ref()</td><td>Tagging a friend so everyone knows who comes first</td></tr>
+    <tr><td>dbt snapshot</td><td>Passport method — cancel old, issue new</td></tr>
+    <tr><td>dbt seed</td><td>Reference chart pinned on the wall</td></tr>
+    <tr><td>Medallion layers</td><td>Muddy sack &rarr; washed and chopped &rarr; dish on the table</td></tr>
+  </table>
+
+  <h3>Comparisons they ask for</h3>
+  <table>
+    <tr><th style="width:34%">Question</th><th>One-line answer</th></tr>
+    <tr><td>Scale up or scale out?</td><td>One slow query → up. Many waiting users → out.</td></tr>
+    <tr><td>Snowpipe or COPY?</td><td>Files trickling in → pipe. Big historical batch → COPY.</td></tr>
+    <tr><td>View or materialised view?</td><td>Light logic → view. Repeated heavy aggregate on one table → materialised.</td></tr>
+    <tr><td>Materialised view or dynamic table?</td><td>Needs joins or a chain of steps → dynamic table.</td></tr>
+    <tr><td>Stream+task or dynamic table?</td><td>Fine control and custom logic → stream and task. Declarative pipeline → dynamic table.</td></tr>
+    <tr><td>Clustering or search optimisation?</td><td>Range scans → clustering. Point lookups on high-cardinality columns → search optimisation.</td></tr>
+    <tr><td>Transient or permanent?</td><td>Reproducible staging data → transient, no fail-safe cost.</td></tr>
+    <tr><td>UDF or procedure?</td><td>Returns a value inside SELECT → UDF. Performs actions → procedure.</td></tr>
+    <tr><td>dbt table or incremental?</td><td>Small or needs full rebuild → table. Large append-heavy fact → incremental.</td></tr>
+    <tr><td>Which layer gets transient tables?</td><td>Silver &mdash; it is fully rebuildable from bronze, so fail-safe is wasted cost.</td></tr>
+    <tr><td>Snapshot timestamp or check?</td><td>Reliable updated_at → timestamp. Otherwise → check.</td></tr>
+  </table>
+
+  <h3>Costs — where credits actually go</h3>
+  <ul class="tight">
+    <li>Virtual warehouses, billed per second with a 60-second minimum each time they resume.</li>
+    <li>Serverless features: Snowpipe, tasks without a warehouse, automatic clustering, materialised
+        view maintenance, search optimisation.</li>
+    <li>Storage, billed on compressed size — including Time Travel and Fail-safe copies.</li>
+    <li>Cloud services, only when they exceed 10% of daily compute, which is rare.</li>
+  </ul>
+</section>
+
+<!-- ===================== M22 ===================== -->
+<section id="m22">
+  <div class="eyebrow">TEST YOURSELF</div>
+  <h2>23. Self Check</h2>
+  <p class="sub">Answer out loud before opening. If you cannot say it aloud, you have not learned it yet.</p>
+
+  <details>
+    <summary>Why can two teams query the same table without slowing each other down?</summary>
+    <p>Storage is central and shared, compute is separate. Each team uses its own virtual warehouse,
+       and warehouses do not share resources — so a heavy finance query cannot delay the loading pipeline.</p>
+  </details>
+
+  <details>
+    <summary>Your query got slower on the second run. Give two possible reasons.</summary>
+    <p>The warehouse suspended in between, so the local disk cache was lost. Or the underlying data
+       changed, which invalidates the result cache and forces a real scan.</p>
+  </details>
+
+  <details>
+    <summary>What is partition pruning and what kills it?</summary>
+    <p>Snowflake reads micro-partition metadata and skips partitions that cannot match your filter.
+       Wrapping the filtered column in a function, filtering on a column unrelated to the natural
+       load order, or a badly clustered large table all reduce pruning.</p>
+  </details>
+
+  <details>
+    <summary>An analyst cannot see a table created this morning, though you granted SELECT last week. Why?</summary>
+    <p>The grant was <code>ON ALL TABLES</code>, which only covered tables existing at that moment.
+       New tables need <code>GRANT SELECT ON FUTURE TABLES IN SCHEMA</code>.</p>
+  </details>
+
+  <details>
+    <summary>Someone deleted rows an hour ago. Walk through recovery.</summary>
+    <p>Find the query id in query history, read the table with <code>BEFORE (STATEMENT =&gt; ...)</code>
+       to confirm, then <code>CREATE OR REPLACE TABLE ... CLONE ... BEFORE (STATEMENT =&gt; ...)</code>.
+       If the whole table was dropped, <code>UNDROP TABLE</code>. All of this only works inside the
+       retention window.</p>
+  </details>
+
+  <details>
+    <summary>You cloned a 5 TB database for testing. What does it cost on day one, and later?</summary>
+    <p>Nothing on day one — only metadata is copied, and both point at the same micro-partitions.
+       Storage grows only as either side changes, and only for the changed partitions.</p>
+  </details>
+
+  <details>
+    <summary>Why did COPY INTO load nothing, though the file is clearly in the stage?</summary>
+    <p>Most likely the file was already loaded — COPY keeps load history for 64 days and skips
+       duplicates. Check <code>COPY_HISTORY</code>. Other candidates: the PATTERN did not match, or
+       a stale file list. <code>FORCE = TRUE</code> reloads, but confirm you will not duplicate rows.</p>
+  </details>
+
+  <details>
+    <summary>What makes a stream go stale, and how do you avoid it?</summary>
+    <p>Not consuming it within the source table's data retention period. Keep retention adequate on
+       tables that feed streams, and consume regularly with a task. Remember that only a DML
+       consuming the stream advances its offset — a plain SELECT does not.</p>
+  </details>
+
+  <details>
+    <summary>Why does the WHEN clause on a task save money?</summary>
+    <p><code>WHEN SYSTEM$STREAM_HAS_DATA(...)</code> makes the task skip entirely if there is nothing
+       new. A skipped task never resumes the warehouse, so no credits are consumed on empty runs.</p>
+  </details>
+
+  <details>
+    <summary>Your task DAG did not run at all. First thing to check?</summary>
+    <p>Whether the root task is resumed — tasks are created suspended, and a suspended root stops the
+       whole chain. Then check <code>TASK_HISTORY</code> for the scheduled state and any error.</p>
+  </details>
+
+  <details>
+    <summary>Explain the difference between masking and a row access policy.</summary>
+    <p>Masking changes what a column looks like for a given role. A row access policy decides which
+       rows come back at all. Row filtering runs first, then masking is applied to the surviving rows.</p>
+  </details>
+
+  <details>
+    <summary>The customer has no Snowflake account. How do you share data?</summary>
+    <p>Create a reader account. You provision and pay for it, they log in and query your shared views
+       read-only. Otherwise a direct share needs both accounts on the same cloud and region, or
+       replication first.</p>
+  </details>
+
+  <details>
+    <summary>When would you refuse to add a clustering key?</summary>
+    <p>On a small or moderately sized table, on a table nobody filters consistently, or on one that
+       is rewritten frequently — automatic reclustering would burn more credits than the queries save.</p>
+  </details>
+
+  <details>
+    <summary>What does dbt's ref() give you that a hardcoded table name does not?</summary>
+    <p>The dependency graph. From it dbt derives run order, parallelism, selective rebuilds with
+       <code>+</code> selectors, and environment switching between dev and prod schemas.</p>
+  </details>
+
+  <details>
+    <summary>How does a dbt incremental model avoid reprocessing everything?</summary>
+    <p>On the first run it builds fully. Afterwards the <code>is_incremental()</code> block adds a
+       filter — usually rows newer than the maximum date already in <code>{{ this }}</code> — and
+       dbt merges them using the unique key. <code>--full-refresh</code> rebuilds from scratch.</p>
+  </details>
+
+  <details>
+    <summary>Give three dbt tests you would put on every fact table.</summary>
+    <p>Unique and not null on the primary key, a relationships test to each dimension, and an
+       accepted-values or expression test on a business-critical column such as status or amount.</p>
+  </details>
+
+  <details>
+    <summary>Where should transformation happen in an ADF plus Snowflake design, and why?</summary>
+    <p>In Snowflake. ADF extracts and lands files; Snowflake compute is elastic, cheaper for set-based
+       work, and keeps the logic in SQL where it can be tested and version-controlled.</p>
+  </details>
+
+  <details>
+    <summary>Why keep a bronze layer at all, when silver already has clean data?</summary>
+    <p>Replayability. If a cleaning rule turns out to be wrong six months later, you rebuild silver
+       and gold from bronze rather than re-extracting from a source system that may no longer hold
+       that history. Bronze is also your audit trail of what the source actually sent.</p>
+  </details>
+
+  <details>
+    <summary>Name one good and one poor use of Cortex LLM functions.</summary>
+    <p>Good: classifying or summarising a text column, or anomaly detection on load metrics. Poor:
+       calling COMPLETE inside a row-level transformation over millions of rows — token cost makes
+       that indefensible.</p>
+  </details>
+</section>
+
+<footer>Prepared by <strong>AiTechs_LVR</strong> · Venkataramana Lankipalli — personal study notes. Works offline in any browser.</footer>
+
+</main>
+</div>
+
+<script>
+  const links = [...document.querySelectorAll('nav a')];
+  const sections = links.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  const spy = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const i = sections.indexOf(e.target);
+        if (i > -1) { links.forEach(l => l.classList.remove('on')); links[i].classList.add('on'); }
+      }
+    });
+  }, { rootMargin: '-12% 0px -75% 0px' });
+  sections.forEach(s => spy.observe(s));
+
+  links.forEach(a => a.addEventListener('click', e => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if (!target) return;
+    e.preventDefault();
+    links.forEach(l => l.classList.remove('on'));
+    a.classList.add('on');
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    history.replaceState(null, '', a.getAttribute('href'));
+  }));
+</script>
+</body>
+</html>
